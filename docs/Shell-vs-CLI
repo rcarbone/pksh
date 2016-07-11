@@ -1,0 +1,38 @@
+
+                 ____  _          _ _                    ____ _     ___
+                / ___|| |__   ___| | |   __   _____     / ___| |   |_ _|
+                \___ \| '_ \ / _ \ | |   \ \ / / __|   | |   | |    | |
+                 ___) | | | |  __/ | |    \ V /\__ \   | |___| |___ | |
+                |____/|_| |_|\___|_|_|     \_/ |___/    \____|_____|___|
+
+
+What is a CLI application?  Simply a restricted shell.  And what is a shell?  Think at it as an enhanced
+version of a CLI application.
+
+So why programmers still insist to write CLI applications?  Why they do not extend the shells to have the
+functionalities they require for their CLI applications?
+
+I will try to demonstrate that if you need to write a CLI application you could avoid to start by scratch
+but a well driven hack at your favorite shell allows you to implement your ongoing CLI application spending
+less effort and having more functionalities.
+
+For example I did it with the so popular 'tcsh' to implement my enhanced version 'pksh'.  Browse docs/HACKING
+file in 'pksh' distribution if you are interested in such activities.
+
+So if your boss ask you to write a new CLI just say him that you will soon start hacking at the shells.
+
+/rocco
+
+
+From Wikipedia, the free encyclopedia
+
+Unix Shell:
+
+  A Unix shell, also called "the command line", provides the traditional user interface for the Unix operating system and
+  for Unix-like systems. Users direct the operation of the computer by entering command input as text for a shell to execute.
+
+
+Command line interpreter:
+
+  A command line interpreter (also command line shell, command language interpreter) is a computer program that reads lines
+  of text entered by a user and interprets them in the context of a given operating system or programming language.

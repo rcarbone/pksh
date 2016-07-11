@@ -1,0 +1,108 @@
+#
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+#                      _        _
+#                _ __ | | _____| |__
+#               | '_ \| |/ / __| '_ \
+#               | |_) |   <\__ \ | | |
+#               | .__/|_|\_\___/_| |_|
+#               |_|
+#
+#              'pksh', the Packet Shell
+#
+#              (C) Copyright 2008-2009
+#     Rocco Carbone <rocco /at/ ntop /dot/ org>
+#
+#  Released under the terms of GNU General Public License
+#  at version 3;  see included COPYING file for details
+#
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+#
+# Top level Makefile in the event you need it (just for convenience)
+#
+
+# Where to find source and documentation
+SUBDIRS = src docs
+
+# Where to find package identifiers
+DDIR = docs
+
+#
+PACKAGE=`cat ${DDIR}/PACKAGE`
+VERSION=`cat ${DDIR}/VERSION`
+TCSH=tcsh-6.16.00
+TCSHSRC=${TCSH}.tar.gz
+
+DOCS = ${DDIR}/AUTHORS ${DDIR}/BUGS    ${DDIR}/COPYING    ${DDIR}/ChangeLog    \
+       ${DDIR}/FAQ     ${DDIR}/HACKING ${DDIR}/MILESTONES ${DDIR}/MOTIVATION   \
+       ${DDIR}/NEWS    ${DDIR}/PACKAGE ${DDIR}/README     ${DDIR}/Shell-vs-CLI \
+       ${DDIR}/THANKS  ${DDIR}/TODO    ${DDIR}/VERSION                         \
+       ${DDIR}/pksh.1  ${DDIR}/pksh.txt ${DDIR}/pksh.html
+
+DIRS = ${PACKAGE}-${TCSH} ${DDIR}
+
+all:
+	@for dir in ${DIRS}; do \
+           if [ -d $$dir ]; then \
+             echo "Making sub-directory $$dir ..."; \
+             (cd $$dir && make); \
+           fi \
+         done
+
+dist:
+# Be sure to include needed header files in the distribution
+	@(cd src; make nic.h ettercap.h)
+	@(cd src; make clean)
+	@(cd docs; make clean)
+	@rm -f *~
+#
+	@if [ ! -d ${PACKAGE}-${VERSION} ]; then mkdir ${PACKAGE}-${VERSION}; fi
+	@if [ ! -d ${PACKAGE}-${VERSION}/src ]; then mkdir ${PACKAGE}-${VERSION}/src; fi
+	@if [ ! -d ${PACKAGE}-${VERSION}/docs ]; then mkdir ${PACKAGE}-${VERSION}/docs; fi
+#	@if [ ! -d ${PACKAGE}-${VERSION}/pub ]; then mkdir ${PACKAGE}-${VERSION}/pub; fi
+#
+	@cp configure ${PACKAGE}-${VERSION}/
+	@cp Makefile ${PACKAGE}-${VERSION}/
+	@cp src/*.h ${PACKAGE}-${VERSION}/src/
+	@cp src/*.c ${PACKAGE}-${VERSION}/src/
+	@cp src/Makefile ${PACKAGE}-${VERSION}/src/
+	@cp docs/Makefile ${PACKAGE}-${VERSION}/docs/
+	@cp ${DOCS} ${PACKAGE}-${VERSION}/docs/
+#	@cp pub/${TCSHSRC} ${PACKAGE}-${VERSION}/pub/
+#
+	@tar cfz ${PACKAGE}-${VERSION}.tar.gz ${PACKAGE}-${VERSION}
+	@mv ${PACKAGE}-${VERSION}.tar.gz pub/
+	@rm -rf ${PACKAGE}-${VERSION}
+	@echo "your backup file is in pub/${PACKAGE}-${VERSION}.tar.gz"
+
+.PHONY: web
+web:
+	@if [ ! -d web ]; then mkdir web; fi
+	@if [ ! -d web/pksh ]; then mkdir web/pksh; fi
+	@if [ ! -d web/pksh/styles ]; then mkdir web/pksh/styles; fi
+	@cp html/*.html web/pksh/
+	@cp html/styles/*.css web/pksh/styles/
+	@cp html/styles/footer*.png web/pksh/styles/
+	@cp html/styles/pksh-16-x-16.png web/pksh/styles/favicon.ico
+	@cp html/styles/pksh-80-x-150.png web/pksh/styles/pksh.png
+	@(cd web; tar cfz ../web-pksh.tar.gz pksh)
+	@echo "your web exports are in web-pksh.tar.gz"
+	@rm -rf web/
+
+oldweb: dist
+	@if [ ! -d web ]; then mkdir web; fi
+	@cp docs/README web/README.txt
+	@cp docs/MOTIVATION web/MOTIVATION
+	@cp docs/MILESTONES web/MILESTONES
+	@cp docs/Shell-vs-CLI web/Shell-vs-CLI.txt
+	@cp pub/${PACKAGE}-${VERSION}.tar.gz web/
+	@(cd web; tar cfz ../web-pksh.tar.gz *)
+	@echo "your web exports are in web-pksh.tar.gz"
+	@rm -rf web/
+
+clean distclean:
+	@rm -f *~
+	@for dir in ${SUBDIRS}; do \
+           if [ -d $$dir ]; then \
+             (cd $$dir && make -s $@); \
+           fi \
+         done

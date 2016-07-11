@@ -1,0 +1,143 @@
+Content-type: text/html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML><HEAD><TITLE>Man page of PKSH</TITLE>
+</HEAD><BODY>
+<H1>PKSH</H1>
+Section: User Commands  (1)<BR>Updated: 14 Jun 2009<BR><A HREF="#index">Index</A>
+<A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+pksh - An extension of the tcsh with an embedded pcap-based network packet analyzer for network monitoring
+<A NAME="lbAC">&nbsp;</A>
+<H2>VERSION</H2>
+
+This manual documents pksh 0.2.2
+<A NAME="lbAD">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<B>pksh</B>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+<I>pksh</I> is an enhanced but completely compatible version of the <I>tcsh</I>
+shell, with built-ins extensions to include network monitoring facilities.
+<A NAME="lbAF">&nbsp;</A>
+<H2>REFERENCE</H2>
+
+The next sections of this manual describe all of the available
+<B>Built-ins commands</B>, and <B>Special shell variables</B>, with the major enhancements of <I>pksh</I> over <B>tcsh</B>.
+<A NAME="lbAG">&nbsp;</A>
+<H3>Built-ins commands</H3>
+
+<DL COMPACT>
+<DT><B>bytes</B><I></I>
+
+<DD>
+Show detailed information about traffic (in terms of bytes) on network interface(s).
+<DT><B>packets</B>
+
+<DD>
+Show detailed information about traffic (in terms of packets) on network interface(s).
+<DT><B>pkarp</B>
+
+<DD>
+Query the ARP cache and display for hosts like the 'arp' command does.
+<DT><B>pkclose</B>
+
+<DD>
+Close network interface(s).
+<DT><B>pkdev</B>
+
+<DD>
+List network interface(s) attached to the system suitable for packet capturing.
+<DT><B>pkdisable</B>
+
+<DD>
+Stop collecting and processing packets on network interface(s).
+<DT><B>pkenable</B>
+
+<DD>
+Start collecting and processing packets on network interface(s).
+<DT><B>pkfilter</B>
+
+<DD>
+Display/Apply a filter to the a network interface.
+<DT><B>pkfinger</B>
+
+<DD>
+Tell the host cache and display information for given hosts like the 'finger' command does for users.
+<DT><B>pkhelp</B>
+
+<DD>
+Help [command]. If command is specified, print out help on it, otherwise print out the list of extensions
+<DT><B>pkhosts</B>
+
+<DD>
+Query the host cache and display a table of hosts viewed on network interface(s) sorted accordingly to a given criteria.
+<DT><B>pklast</B>
+
+<DD>
+Query the host cache and display a table of hosts viewed on network interface(s) sorted accordingly to their age.
+<DT><B>pkopen</B>
+
+<DD>
+Open network interface(s) to look at packets on the network.
+<DT><B>pkstatus</B>
+
+<DD>
+Tell network interface(s) status information in terms of bytes/packets viewed.
+<DT><B>pkswap</B>
+
+<DD>
+Switch to interface and keep history to implement an interface stack.
+<DT><B>pkuptime</B>
+
+<DD>
+Tell how long the shell has been running and display network information foreach packet enabled interface(s)
+<DT><B>pkwho</B>
+
+<DD>
+Query the host cache and display a table of hosts viewed on network interface(s) sorted accordingly to local network usage.
+<DT><B>throughput</B>
+
+<DD>
+Show detailed information about traffic (in terms of throughput) on network interface(s)
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<A HREF="/cgi-bin/man/man2html?1+tcsh">tcsh</A>(1), <A HREF="/cgi-bin/man/man2html?1+tcpdump">tcpdump</A>(1), <A HREF="/cgi-bin/man/man2html?1+ntop">ntop</A>(1), <A HREF="/cgi-bin/man/man2html?3+pcap">pcap</A>(3)
+<A NAME="lbAI">&nbsp;</A>
+<H2>AUTHORS</H2>
+
+
+<DL COMPACT>
+<DT>Rocco Carbone &lt;<A HREF="mailto:rocco@ntop.org">rocco@ntop.org</A>&gt;<DD>
+<P>
+</DL>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">VERSION</A><DD>
+<DT><A HREF="#lbAD">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAE">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAF">REFERENCE</A><DD>
+<DL>
+<DT><A HREF="#lbAG">Built-ins commands</A><DD>
+</DL>
+<DT><A HREF="#lbAH">SEE ALSO</A><DD>
+<DT><A HREF="#lbAI">AUTHORS</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:15:29 GMT, June 14, 2009
+</BODY>
+</HTML>

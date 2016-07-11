@@ -1,0 +1,307 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                     _        _
+               _ __ | | _____| |__
+              | '_ \| |/ / __| '_ \
+              | |_) |   <\__ \ | | |
+              | .__/|_|\_\___/_| |_|
+              |_|
+
+             'pksh', the Packet Shell
+
+             (C) Copyright 2003-2009
+     Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+ Released under the terms of GNU General Public License
+ at version 3;  see included COPYING file for details
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+pksh, the Packet Shell
+
+
+  I could never have imagined the need for such a shell let alone
+  implementing it, but now you have invented it, and it sounds neat
+  and so obviously useful.
+                              <Stanley.Hopcroft@IPAustralia.Gov.AU>
+
+
+This README file includes:
+
+    * Hello world!
+    * Abstract
+    * Licensing
+    * Features
+    * Download
+    * Requirements
+    * Platforms
+    * Installation
+    * Documentation
+    * Bugs
+    * References
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+* Hello world!
+  ============
+
+  Hello world, I am 'pksh', the Packet Shell.
+
+  'pksh' is a hack of the 'tcsh' for packets, bytes, hosts and protocols counts
+  mainly implemented to include passive network monitoring functionalities into
+  a shell.
+
+  So 'pksh' is a shell.  No, no!  'pksh' is a pcap-based network sniffer, like
+  the popular 'tcpdump' and 'ntop'.  No, no again!  'pksh' is both a shell, a
+  network sniffer, a query language for network monitoring and finally a
+  rendering engine to display in a form readable for humans and system
+  administrators all traffic on LAN segments.
+
+  It aims to give on character-based terminals the same level of information
+  'ntop' (http://www.ntop.org) already provides via its embedded web interface.
+
+  Ok, let me explain.  'pksh' is an enhanced version of the 'tcsh' to include
+  facilities to capture, analyze, collect network traffic and display data on
+  character-based terminals.
+
+  So 'pksh' is four main applications at the same time:
+
+   * a shell with built-ins extensions to include network capabilities
+   * a pcap-based packet sniffer to look at packets on the network and collect
+     network data
+   * a query language for bytes, packets, protocols and hosts
+   * a rendering engine to display all data collected as tables on
+     character-based terminals
+
+  'pksh' can perform your daily job as your default and login shell just because
+  all of the existing native 'tcsh' functionalities are left unchanged.
+
+  Moreover, if and when you want to take a look at some traffic on your LAN segment,
+  'pksh' has extensions that allow you to capture and show all the network data
+  and network measurements you want.
+
+  All in a single program without leaving your native job enviroment!
+
+  This software was originally written by me, Rocco Carbone, late in 2001 just
+  as part of an ongoing research project to investigate and improve 'ntop'
+  (http://www.ntop.org) as a programmable network packets engine, but it was
+  never finished due to several reasons.  Just browse through the docs/MOTIVATION
+  and docs/MILESTONES files if you are interested in the full story.
+
+  In a word you can have a vision of your network completely different from that
+  provided by the 'ntop' web daemon, without lossing in accuracy and usability.
+
+
+* Abstract
+  ========
+
+  This directory contains source code for 'pksh', a shell for network packets,
+  bytes, hosts and protocols counts that allow you to monitor your LAN.
+
+  It is not too difficult to use a shell as a general purpose development
+  environment to implement CLI applications.  I am a network programmer and
+  I often, very often, need simple and sometime complex CLI applications,
+  just to test a new protocol implementation or perform a server benchmark,
+  or maybe execute a simple units test or to take a look at network bandwidth.
+
+  CLI applications for network programmers are the same of shell scripts for
+  system administrators, both abuse of them.
+
+  I will try to demonstrate that if you need to write a CLI application you
+  could avoid to start by scratch but a well driven hack at your favorite shell
+  allows you to implement your ongoing CLI application.
+
+  For example I did it with the so popular 'tcsh' to implement my 'pksh'.
+
+  For several years when I needed a CLI application I started each time from
+  the beginning, writing and writing hundreds lines of code, until I finally
+  implemented a private project called 'gcf' (General Client Framework)
+  containing all that I needed to perform interactions with the user, including
+  of course command line reading, history and completions using the GNU readline
+  library.
+
+  From time to time I used this common framework to develop each new CLI application
+  I needed and so I forgot for years how to deal with all the damn jobs of
+  interacting with the keyboard, but I rather than concentrated my effort on the
+  application domain.
+
+  Over the time I was unsatisfied with this approch mainly because my framework
+  lacked of fundamental mechanisms such as ability to execute external application
+  and piping data between them.  My first istinct was to learn how to implement
+  such features from the shells and to re-use their code into my framework.  But
+  unfortunately this job failed mainly because the shells I took a look at were
+  monolithic programs, often making use of global variables, and they were not
+  generally implemented as a development enviroment for the C programmers.
+
+  In a word the mechanisms the shells implements are not easily re-usable from
+  the C language in other projects.
+
+  But I still needed to embed my specific domains requirements into a shell and
+  I was really melt with such idea to use the shell as CLI, without the need to
+  reinvent the wheel in order to inherit from the shell itself all its native and mature
+  mechanisms, such as piping, built-ins, job control, a command language interpreter,
+  aliasing, and much more.
+
+  So I started hacking at the 'tcsh' to add built-ins for my specific domain.
+
+  And now the 'pksh' is exactly what I wanted for years.
+
+
+* Licensing
+  =========
+
+  'pksh', the Packet Shell is released under the terms of the GNU General Public
+  License at version 3; see included COPYING file for more information.
+
+
+* Features
+  ========
+
+  o The current release supports only the following types of data-links:
+    * Local loopback
+    * Ethernet (10 and up)
+
+  o Handle several network interfaces at the same time
+
+  o Start/stop a thread for packet capturing on each network interface enabled/disabled
+
+  o Implement full dynamic management of all available network interfaces (open/sniff/close)
+
+  o Handle a stack of most referenced network interfaces
+
+  o Provide foreach network interface:
+    * Addressing and interface activity
+    * Total packets and bytes counters (both RX and TX)
+    * Packet size distribution
+    * Global protocol distribution (Broadcast and Multicast packets and bytes counts)
+    * IP protocol distribution (IP, TCP, UDP, ICMP, non-IP packets and bytes counts)
+    * TCP/UDP services distribution (both RX and TX)
+    * Throughput
+
+  o Automatically update the $hosts variable all the time a rendering command is issued
+
+  o Implement hostname completion and globbing via the predefined $hosts shell variable
+    in all rendering extensions just to allow you to issue commands such as:
+
+    pksh@eth0> pkarp 192.168.TAB
+    and have completed the list of all the hosts starting at given prefix,
+
+    pksh@eth0> pkarp 192.168.*
+    to show the ARP table for all the hosts matching the given prefix.
+
+  o Has a powerful rendering engine to add/remove columns in each rendering extension
+    (the output of each command can be customized by deleting the default columns
+     and adding only those of interest via command line options)
+
+  o Sort by each column to allow output tables displayed according to a given sort criteria
+
+
+* Download
+  ========
+
+  You can download the source code and documentation at:
+
+  http://pksh.tecsiel.it [82.187.228.118]
+
+  I will ask Luca Deri, ntop's author, to host the project on 'ntop' web site,
+  but he is so busy these days.  I hope the project will be soon integrated
+  into the family of 'ntop' technologies and products.
+
+
+* Requirements
+  ============
+
+  To perform its task 'pksh' needs at least two extra packages providing the
+  following functionalities:
+
+  (a) a portable framework for low-level network capturing facility
+  (b) the native tcsh source code
+
+
+  I developed and run 'pksh' on my linux intel based box with:
+
+  (a) libpcap 0.9.8 Copyright (c) 1993, 1994, 1995, 1996, 1997
+       The Regents of the University of California.  All rights reserved.
+
+     * Latest version libpcap, the Packet Capture Library, can be found at:
+
+         http://www.tcpdump.org/release/libpcap-0.9.8.tar.gz
+
+
+  (b) tcsh 6.15.00, Copyright (c) 1980, 1991
+       The Regents of the University of California.  All rights reserved.
+
+    * The most recent release of tcsh, the Tcsh, can be found at:
+
+        ftp://ftp.funet.fi/pub/unix/shells/tcsh/tcsh-6.15.00.tar.gz
+
+
+
+* Platforms
+  =========
+
+  o i686 running Linux 2.6.18
+  o sparc sun4u running Solaris 10
+
+  Just to be clear, my development environment is on an Intel-based box
+  running a testing Debian GNU/Linux distribution.
+
+
+* Installation
+  ============
+
+     o To compile 'pksh', you need to have the libpcap development
+       package installed on your system, otherwise you need to
+       build and install libpcap from sources by yourself
+
+     o Run ./configure at the top level of your 'pksh' distribution
+       if you have libpcap on standard places.
+
+       I planned to modify the 'configure' script to also build
+       from source distribution, by running:
+
+       ./configure --with-pcap-dir=your_libpcap_location 
+
+      'configure' is a shell script at the top level of the 'pksh'
+      distribution which performs all required steps in order to
+      have a patched version of the 'tcsh' ready to be compiled
+      with all available 'pksh' extensions.
+
+      The 'configure' script also attempts to natively configure the
+      'tcsh' and compile it by executing 'make'.  If everything is ok,
+      you should have a binary called 'pksh' under the directory
+      pksh-tcsh-x.yy.zz/pksh
+
+
+<PLEASE>
+      Please send me patches for any modifications you need to compile,
+      install and run the shell on platforms I have currently unaware.
+</PLEASE>
+
+
+* Documentation
+  =============
+
+Most documentation is in the README and other files under the docs/
+directory.
+
+manpage for the already implemented extensions is in docs/pksh.1
+ot its {text,html} version docs/pksh.{txt,html}
+
+
+* Bugs
+  ====
+
+There are no mailing lists for 'pksh' at this time.
+
+Bugs can be reported to the author Rocco Carbone via email at:
+<rocco /at/ ntop /dot/ org>
+
+
+* References
+  ==========
+
+  http://www.tcpdump.org
+  http://www.tcsh.org
+  http://www.ntop.org

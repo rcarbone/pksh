@@ -1,0 +1,91 @@
+PKSH(1)                                                                PKSH(1)
+
+
+
+NAME
+       pksh  -  An  extension  of the tcsh with an embedded pcap-based network
+       packet analyzer for network monitoring
+
+VERSION
+       This manual documents pksh 0.2.2
+
+SYNOPSIS
+       pksh
+
+DESCRIPTION
+       pksh is an enhanced but  completely  compatible  version  of  the  tcsh
+       shell,  with built-ins extensions to include network monitoring facili-
+       ties.
+
+REFERENCE
+       The next sections of this manual describe all of the  available  Built-
+       ins  commands, and Special shell variables, with the major enhancements
+       of pksh over tcsh.
+
+   Built-ins commands
+       bytes   Show detailed information about traffic (in terms of bytes)  on
+               network interface(s).
+
+       packets Show  detailed  information about traffic (in terms of packets)
+               on network interface(s).
+
+       pkarp   Query the ARP cache and display for hosts like the  'arp'  com-
+               mand does.
+
+       pkclose Close network interface(s).
+
+       pkdev   List  network  interface(s) attached to the system suitable for
+               packet capturing.
+
+       pkdisable
+               Stop collecting and processing packets on network interface(s).
+
+       pkenable
+               Start  collecting  and  processing  packets  on  network inter-
+               face(s).
+
+       pkfilter
+               Display/Apply a filter to the a network interface.
+
+       pkfinger
+               Tell the host cache and display  information  for  given  hosts
+               like the 'finger' command does for users.
+
+       pkhelp  Help  [command]. If command is specified, print out help on it,
+               otherwise print out the list of extensions
+
+       pkhosts Query the host cache and display a table  of  hosts  viewed  on
+               network interface(s) sorted accordingly to a given criteria.
+
+       pklast  Query  the  host  cache  and display a table of hosts viewed on
+               network interface(s) sorted accordingly to their age.
+
+       pkopen  Open network interface(s) to look at packets on the network.
+
+       pkstatus
+               Tell  network  interface(s)  status  information  in  terms  of
+               bytes/packets viewed.
+
+       pkswap  Switch  to interface and keep history to implement an interface
+               stack.
+
+       pkuptime
+               Tell how long the shell has been running  and  display  network
+               information foreach packet enabled interface(s)
+
+       pkwho   Query  the  host  cache  and display a table of hosts viewed on
+               network interface(s) sorted accordingly to local network usage.
+
+       throughput
+               Show  detailed  information about traffic (in terms of through-
+               put) on network interface(s)
+
+SEE ALSO
+       tcsh(1), tcpdump(1), ntop(1), pcap(3)
+
+AUTHORS
+       Rocco Carbone <rocco@ntop.org>
+
+
+
+                                  14 Jun 2009                          PKSH(1)

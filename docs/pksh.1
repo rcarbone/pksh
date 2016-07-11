@@ -1,0 +1,92 @@
+.\" -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+.\"                      _        _
+.\"                _ __ | | _____| |__
+.\"               | '_ \| |/ / __| '_ \
+.\"               | |_) |   <\__ \ | | |
+.\"               | .__/|_|\_\___/_| |_|
+.\"               |_|
+.\" 
+.\"              'pksh', the Packet Shell
+.\" 
+.\"              (C) Copyright 2003-2009
+.\"     Rocco Carbone <rocco /at/ ntop /dot/ org>
+.\" 
+.\"  Released under the terms of GNU General Public License
+.\"  at version 3;  see included COPYING file for details
+.\" 
+.\" -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+.\"
+.TH PKSH 1 "14 Jun 2009"
+.SH NAME
+pksh \- An extension of the tcsh with an embedded pcap-based network packet analyzer for network monitoring
+.SH VERSION
+This manual documents pksh 0.2.2
+.SH SYNOPSIS
+.B pksh
+.SH DESCRIPTION
+\fIpksh\fR is an enhanced but completely compatible version of the \fItcsh\fR
+shell, with built-ins extensions to include network monitoring facilities.
+.SH REFERENCE
+The next sections of this manual describe all of the available
+\fBBuilt-ins commands\fR, and \fBSpecial shell variables\fR, with the major enhancements of \fIpksh\fR over \fBtcsh\fR.
+.SS "Built-ins commands"
+.TP 8
+.B bytes\fI
+Show detailed information about traffic (in terms of bytes) on network interface(s).
+.TP 8
+.B packets
+Show detailed information about traffic (in terms of packets) on network interface(s).
+.TP 8
+.B pkarp
+Query the ARP cache and display for hosts like the 'arp' command does.
+.TP 8
+.B pkclose
+Close network interface(s).
+.TP 8
+.B pkdev
+List network interface(s) attached to the system suitable for packet capturing.
+.TP 8
+.B pkdisable
+Stop collecting and processing packets on network interface(s).
+.TP 8
+.B pkenable
+Start collecting and processing packets on network interface(s).
+.TP 8
+.B pkfilter
+Display/Apply a filter to the a network interface.
+.TP 8
+.B pkfinger
+Tell the host cache and display information for given hosts like the 'finger' command does for users.
+.TP 8
+.B pkhelp
+Help [command]. If command is specified, print out help on it, otherwise print out the list of extensions
+.TP 8
+.B pkhosts
+Query the host cache and display a table of hosts viewed on network interface(s) sorted accordingly to a given criteria.
+.TP 8
+.B pklast
+Query the host cache and display a table of hosts viewed on network interface(s) sorted accordingly to their age.
+.TP 8
+.B pkopen
+Open network interface(s) to look at packets on the network.
+.TP 8
+.B pkstatus
+Tell network interface(s) status information in terms of bytes/packets viewed.
+.TP 8
+.B pkswap
+Switch to interface and keep history to implement an interface stack.
+.TP 8
+.B pkuptime
+Tell how long the shell has been running and display network information foreach packet enabled interface(s)
+.TP 8
+.B pkwho
+Query the host cache and display a table of hosts viewed on network interface(s) sorted accordingly to local network usage.
+.TP 8
+.B throughput
+Show detailed information about traffic (in terms of throughput) on network interface(s)
+.SH "SEE ALSO"
+tcsh(1), tcpdump(1), ntop(1), pcap(3)
+.SH AUTHORS
+.PD 0
+.TP 2
+Rocco Carbone <rocco@ntop.org>

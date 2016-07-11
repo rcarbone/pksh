@@ -1,0 +1,84 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                     _        _
+               _ __ | | _____| |__
+              | '_ \| |/ / __| '_ \
+              | |_) |   <\__ \ | | |
+              | .__/|_|\_\___/_| |_|
+              |_|
+
+             'pksh', the Packet Shell
+
+             (C) Copyright 2003-2009
+    Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+ Released under the terms of GNU General Public License
+ at version 3;  see included COPYING file for details
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+And now please ask me:
+ "Rocco, why did you planned to implement another shell?"
+
+The pksh exists because I am a network programmer, an enough curiuos
+programmer, and I want to learn more of network protocols.  I usually
+write at work applications over TCP/IP since more than 15 years,
+and I often need to take a look at packets on the network for my daily
+job, while decoding some strange PDU or trying to understand an
+unexpected behaviour of my latest version of the software.
+
+So, to learn more of protocols, and network programming in general,
+there is no way other than capturing and decoding packets on live networks.
+But I need a powerful network tool, not the usuals currently available
+on modern Unix distributions.  GUIs and web pages are nice, but 'tcpdump'
+and 'trafshow' are still good friends even if they are awkward in some respects
+and pretty useless for directed LAN investigation.
+
+Unfortunately none of the existent network tools are programmable
+enough to take a deep look at my LAN segment using only with few
+lines of code or just hitting few keystrokes on my keyboard.
+
+Moreover I also am a pipe (|) fanatic, and, in the spirit of Unix,
+I usually want to filter the output and pass it to subprograms.
+
+None of the network tools of the net have the pipe command available.
+So, instead to reinvent the wheel, I just started to think to reuse
+the pipe mechanism that all the Unix shells have already implemented.
+
+I was so excited to issue commands like:
+
+pksh> pkhost | head -25 | mail -s "top 25 hosts as `date'" rocco@ntop.org
+
+to send at my email address the top 25 hosts in terms of total bytes
+sent/received at a given date.
+
+I started to think that I needed a 'ntop' version at fingers power,
+a 'ntop' CLI version.  And more specific I realized that I needed to
+embed 'ntop' functionalities into a shell.  The 'ntop' web-based daemon
+offers several pages with so much information that cannot be reproduced
+on the terminal, or at least they may be reproduced but need to be splitted
+in several outputs, and then driven by several specific commands.
+
+So I started thinking to an extension of the shell and 'pksh' was
+born as an extension of the 'tcsh', which is my preferred login shell.
+
+The 'tcsh' was the choice for the shell!  I do not know if it is the best
+shell available on the Internet.  But it is my daily shell since my first
+login on a Unix system (Digital Ultrix), so the 'tcsh' was the choice by default.
+
+And started to do my best to name and implement 'pksh' commands, as
+particular views of the 'ntop' html pages.
+
+Programming inside the shell is an exciting activity and day by day
+a lot of functionalities are discovered and ideas become reality, so
+I also tried to go ahead with shell-specific features, for example
+adding variables on the fly to the shell for globbing and hosts completions.
+
+I said to Luca Deri, the ntop's author, that it is impossible with html :-)
+
+But I am sure I am so far to include all what really a networker needs,
+and therefore I need the feedback of the Internet community to understand the need
+for such tool in order to continue my effort and add support for more network data-link
+interfaces, more protocols, more built-ins, more data rendering, more of other.
+
+/rocco

@@ -1,0 +1,41 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                     _        _
+               _ __ | | _____| |__
+              | '_ \| |/ / __| '_ \
+              | |_) |   <\__ \ | | |
+              | .__/|_|\_\___/_| |_|
+              |_|
+
+             'pksh', the Packet Shell
+
+             (C) Copyright 2003-2009
+    Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+ Released under the terms of GNU General Public License
+ at version 3;  see included COPYING file for details
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+This file lists occasional notes about software
+bugs someone has noticed but I had no time to fix
+them immediately.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+B U G S:
+========
+
+
+  o Wed Jul  2 14:34:45 CEST 2008
+    Rocco Carbone
+
+    ICMP packets counts are incorrect on loopback interface
+    (they are counted as Other rather than ICMP)
+
+  o Wed Jul 24 05:32:10 CEST 2008
+    Rocco Carbone
+
+    getopt seems to not work well for the first time an option is used
+    I suspect there is some uninitialized variable in getopt.c
+

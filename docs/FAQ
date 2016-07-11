@@ -1,0 +1,54 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                     _        _
+               _ __ | | _____| |__
+              | '_ \| |/ / __| '_ \
+              | |_) |   <\__ \ | | |
+              | .__/|_|\_\___/_| |_|
+              |_|
+
+             'pksh', the Packet Shell
+
+             (C) Copyright 2003-2009
+    Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+ Released under the terms of GNU General Public License
+ at version 3;  see included COPYING file for details
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+F A Q:
+======
+
+Q. Why did you implemented 'pksh'?
+A. Because I want to learn more of network protocols
+   from the programmer point of view.
+
+
+Q. What can 'pksh' do for me?
+A. 'pksh' is a pcap-based network sniffer like the so popular
+   'tcpdump', 'trafshow' and 'ipgraf', but it does not continuosly
+   fill the terminal with lot of information at the system speed,
+   but only on user demand via command line interactions.
+
+
+Q. Why I should use this software?
+A. If you are interestered in advanced network monitoring give
+   'pksh' a chance to run on your LAN segment.  It aims to be
+   in a near future a modern solution for network problem monitoring
+   using only character-based terminals.
+
+
+Q. Why does 'pksh' use a dedicated thread to sniff packets on each interface?
+A. This is a long story.  This is only a temporary solution because I had
+   no much time to hack tcsh's input read-loop routine.  So I had really
+   no alternatives in the short time.
+   But I will implement the single-process version as soon as possible.
+
+
+Q. Can I know the list of OSs and supported platforms 'pksh' run on?
+A. 'pksh' was written and tested on an Intel i686 box running
+    Debian/Linux (the glorious tar.tecsiel.it) with the
+    GNU C compiler; then the software was ported on the another
+    main target development host I have access to, running
+    the Solaris 10 Operating System.

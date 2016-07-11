@@ -1,0 +1,80 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                     _        _
+               _ __ | | _____| |__
+              | '_ \| |/ / __| '_ \
+              | |_) |   <\__ \ | | |
+              | .__/|_|\_\___/_| |_|
+              |_|
+
+             'pksh', the Packet Shell
+
+             (C) Copyright 2003-2009
+    Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+ Released under the terms of GNU General Public License
+ at version 3;  see included COPYING file for details
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+C h a n g e L o g
+=================
+
+Here is the list of all { significant | noteworthy | major | et al }
+changes to the implementation of the pksh.
+
+The file NEWS contains a chronology of releases and major versions.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+2008-06-16  Rocco Carbone <rocco /at/ ntop /dot/ org>
+	* After a brief talk at ntop lab with Luca and other ntop-ers
+	  about the availability of a ntop's CLI (again), I started
+	  'pksh' development using sources from the my old unfinished
+	  and very very unstable project 'nsh'
+
+2008-07-04  Rocco Carbone <rocco /at/ ntop /dot/ org>
+	* Initial public release 0.1.0 announced to ntop mailing list and freshmeat.net
+
+	  FEATURES:
+	  * Runs under Linux 2.6.18
+	  * Uses libpcap 0.9.8
+	  * Uses tcsh 6.15.00
+	  * Supports only Ethernet and Loopback data-link network interfaces
+	  * Implements the following commands as extensions to native tcsh built-ins
+	    o bytes    o packets  o pkhelp o pkdev   o pkopen o pkclose o pkfilter o pkenable
+	    o pkuptime o pkstatus o pkswap o pkhosts o pkarp  o pklast  o pkwho    o pkfinger
+	    o throughput
+	* Most commands have hostname completion and globbing via the $hosts variable
+	  e.g. you can issue commands in 'pksh' such as:
+               pksh@eth0> pkarp 192.168.TAB
+	       pksh@eth0> pkarp 192.168.*
+	* General and minimal documentation have been written
+	* Set a bare html download area at http://pksh.tecsiel.it [82.187.228.118]
+	
+2008-07-05  Rocco Carbone <rocco /at/ ntop /dot/ org>
+	* fixed core in pkenable.c due to unitialized variable filter
+	* fixed core in wrapper.c due to access to the unitialized variable $hosts via adrof()
+	* changed the output of pkarp() to include interface name and data-link type
+	* changed the output of pkstatus() to include an internet standalone line (network/netmask/broadcast)
+	* the HW address => IP address binding has been completely rewritten
+
+2008-07-12  Rocco Carbone <rocco /at/ ntop /dot/ org>
+	* Official public release 0.2.0 available for download at http://pksh.tecsiel.it announced to freshmeat.net
+	  o Added support for broadcast and multicast IP addresses
+	  o Added a lot of counters for bytes/packets/protocols
+	  o Data-link decoding/counting for most used protocols completed
+	  o IP decoding/counting for most used protocols completed
+	  o TCP decoding/counting started
+	  o Implementation of the 'protocols' command
+	  o Added '{bytes,packets,protocols} distribution' to command 'pkfinger'
+
+2008-24-12  Rocco Carbone <rocco /at/ ntop /dot/ org>
+	* Official public release 0.2.1 available for download at http://pksh.tecsiel.it announced to freshmeat.net
+	  o Added support for passive OS fingerprints using the 'ettercap' database
+
+2009-06-14  Rocco Carbone <rocco /at/ ntop /dot/ org>
+	* Public release 0.2.2 announced to freshmeat.net
+	  o Maintenance release start development again
+	  o It includes latest released tcsh-6.16.00 and latest available oui.txt available from IEEE

@@ -1,0 +1,168 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                     _        _
+               _ __ | | _____| |__
+              | '_ \| |/ / __| '_ \
+              | |_) |   <\__ \ | | |
+              | .__/|_|\_\___/_| |_|
+              |_|
+
+             'pksh', the Packet Shell
+
+             (C) Copyright 2003-2009
+    Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+ Released under the terms of GNU General Public License
+ at version 3;  see included COPYING file for details
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+This file gives you significant information about
+how to hack on the 'pksh' in order to enhance the lot
+of commands it had already implemented.  It can be
+also used as the Packet Shell developer documentation.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+H A C K I N G:
+==============
+
+
+General
+=======
+
+The only sources of the Packet Shell are in the src/ directory,
+which contains the core of the shell with all the planned extensions
+to the 'tcsh'.
+
+They are divided into 3 separate groups of files:
+
+ o support files
+ o admin files
+ o rendering files
+
+with the obvious meaning their name and class suggests.  The support
+files are the common development framework, while the admin and rendering
+files use to implement their own functionalities.  Admin commands act
+on the network interfaces (open/enable/close/swap) while the rendering
+commands act on the hosts hash tables.
+
+
+Here's what the core files do:
+
+support files
+=============
+ args.c          => How to handle dynamic arrays of strings
+ cache.c         => Routines to handle the internal hosts cache
+ datalinks.c     => Network interfaces protocol decoders
+ decoders.c      => Decoders/counters for the most common protocols
+ ettercap.c      => passive OS fingerprints resolver
+ ettercap.h      => Automatically generated file to keep the table of OS fingerprints names
+ ettercap2c.c    => An utility to convert the etter.finger.os passive OS fingerprints file to a C variable
+ etter.finger.os => The list of OS fingerprints maintained by ettercap project
+ fmemdmp.c       => Routine to dump memory area
+ glob.c          => The glob.c and glob.h from glibc-2.3.1 by GNU
+ hash.h          => Simple hash table implementation by Michael W. Shaffer <mwshaffer@yahoo.com>
+ hash.c          => Simple hash table implementation by Michael W. Shaffer <mwshaffer@yahoo.com>
+ init.c          => All that serves to initialze the Packet Shell
+ interface.c     => How to handle the table of network interface(s)
+ interval.c      => How to handle time and time intervals
+ list.h          => Simple doubly-linked list implementation by Michael W. Shaffer <mwshaffer@yahoo.com>
+ list.c          => Simple doubly-linked list implementation by Michael W. Shaffer <mwshaffer@yahoo.com>
+ nic.h           => Automatically generated file to keep the table of NIC vendor names
+ oui.txt         => The list of NIC vendor names maintained by IEEE
+ oui2c.c         => An utility to convert the IEEE 'oui.txt' NIC vendor file to a C variable
+ pksh.h          => Definitions for the Packet Shell
+ prompt.c        => How to manage the Packet Shell prompt
+ render.c        => Printing routines to have a well formatted output for bytes, packets, hosts and protocols
+ sort.c          => How to sort the hosts cache
+ stupid.c        => The simplest Packet Shell built-in extension to be used as a template
+ vendor.c        => NIC vendor names resolver
+ wrapper.c       => Wrapper around original pksh_xxx() for use with tcsh
+
+
+
+admin files
+===========
+ pkclose.c    => Close network interface(s)
+ pkdev.c      => List all network interfaces suitable for being used with the Packet Shell
+ pkenable.c   => Enable packets capture on network interface(s)
+ pkfilter.c   => Display/Apply the BPF filter associated to a network interface
+ pkhelp.c     => Provide short help messages for all the built-ins extensions implemented by the Packet Shell
+ pkopen.c     => Open network interface(s) to look at packets on the network
+ pkstatus.c   => Display detailed about the current status of network interface(s)
+ pkswap.c     => Manage the stack of referenced network interfaces
+ pkuptime.c   => Tell how long the shell has been running
+
+
+
+rendering files
+===============
+ bytes.c      => Tell the hosts cache and display detailed information in terms of bytes
+ packets.c    => Tell the hosts cache and display detailed information in terms of packets
+ pkarp.c      => Tell and display the ARP cache like the 'arp' command does
+ pkfinger.c   => Tell the hosts cache and display detailed information for hosts like the 'finger' command does for users
+ pkhosts.c    => Tell and display the hosts cache to show the table of hosts viewed on network interface(s)
+ pklast.c     => Tell and display the hosts cache like the 'last' command does for users
+ pkwho.c      => Tell and display the hosts cache like the 'who' and 'rwho' commands do for users
+ throughput.c => Tell and display the hosts cache to show detailed information about the throughput viewed on network interface(s)
+ protocols.c  => Tell and display the hosts cache to show detailed information about the protocols usage on network interface(s)
+
+
+
+Writing Extensions
+==================
+
+This section explains how to add a new built-in to the Packet Shell.
+As I said in the README, the Packet Shell is easily extendible. At
+the time of writing, I had already implemented about 18 new built-ins.
+
+The simplest possible extension to the Packet Shell can be found
+in src/stupid.c in the source distribution, which can be used
+both as template and also as an valuable tutorial for the beginners.
+
+Suppose now you want to add a new function to the already available
+extensions for the Packet Shell.  Here are the istructions to proceed.
+
+1. cp the source file src/stupid.c in src/foo.c and edit the copy
+   to meet your requirements.  Choose the name you want to assign
+   to the new built-in extension and assign the name to the function
+   e.g.
+   int foo (int argc, char * argv []) { ... }
+
+2. edit the src/Makefile to add foo.c to the list of known sources
+   to be compiled.
+
+   In fact this Makefile can be used only with development goals
+   in mind, just to allow on-place compilation and before
+   the extension has to be definitely inserted into the 'pksh'.
+
+3. edit 'configure' at the top level
+
+   a. add the source file foo.c to the shell variable $CMDADMIN
+      or $CMDVIEWS depending on its class
+
+   b. lookup in the source tcsh file sh.init.c for the right place
+      in the 'struct biltins bfunc[]' array where to insert the command
+
+      Warning: Please note that alphabetic order in this table is vital.
+               You will miss the extension if you insert the entry in a
+               wrong place!  This is currently tcsh limitation for unknown reasons.
+
+      You have be warned!!!
+
+   c. add a branch [case] needed to patch sh.init.c in subroutine
+      linenumber() near the begin of the file.
+
+      Example: if the name you have assigned to the new extension
+                is "foo" then it _must_ be placed before the already
+                exiting command "foreach", and therefore you have to
+                add a line in the switch section of the linenumeber()
+                subroutine of 'configure' which looks like this:
+
+                foo)     before=foreach     ;;
+
+
+That's all folks!
+
+/rocco

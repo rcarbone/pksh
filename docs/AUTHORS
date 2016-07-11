@@ -1,0 +1,39 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                     _        _
+               _ __ | | _____| |__
+              | '_ \| |/ / __| '_ \
+              | |_) |   <\__ \ | | |
+              | .__/|_|\_\___/_| |_|
+              |_|
+
+             'pksh', the Packet Shell
+
+             (C) Copyright 2003-2009
+    Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+ Released under the terms of GNU General Public License
+ at version 3;  see included COPYING file for details
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+This file lists people who have written or made
+significant contribution to the Packet Shell 'pksh'.
+
+Please take a look at the ChangeLog file for specific
+changes by authors, and look into the THANKS file for
+people who helped in various ways on this piece of software.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+A U T H O R S:
+==============
+
+* Me - Rocco Carbone <rocco /at/ ntop /dot/ org>
+  o Idea
+  o Design
+  o Core base implementation
+  o Script to auto configure and apply patches to the tcsh's sources
+  o Testing
+  o Documentation
+  o Maintainer

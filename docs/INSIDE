@@ -1,0 +1,51 @@
+
+  To implement most of the planned functionalities I keep in memory
+  several hash tables
+
+  o the hwnames with unique identifiers at the network interface layer
+  o the ipnames with unique IP address at the IP protocol layer
+  o the l7names with unique hostnames resolved for humans
+
+  All of them reference an unique object in memory.
+
+  Each time an unknown host is viewed an object is allocated to keep
+  all relevant information.
+
+  The hashing is heavily based on:
+
+  "Simple hash table implementation"
+  "Simple doubly-linked list implementation"
+
+   by Michael W. Shaffer <mwshaffer@yahoo.com>
+
+   with few modification/enhancements by me, Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+   I also planned to use the native hashing algorithms of the tcsh, but currently I had no time
+   to take a look at them.
+
+
+Local convention
+
+  Null IP address "0.0.0.0" is not added to the space of know names
+  IP address "255.255.255.255" is not added to the space of know names
+
+  Moreover the IP broadcast and Multicast addresses are not added to the space of know names
+
+
+
+  How both the hwnames and the ipnames refer to the same element in memory.
+
+
+              HW hash table
+          +-------------------+
+      key | xx:xx:xx:xx:xx:xx |
+          |-------------------|
+      val |     reference     |---*    host
+          +-------------------+   |  +------+
+                                  +->|      |
+             IP hash table           |      |
+          +-------------------+   +->|      |
+      key |  xxx.xxx.xxx.xxx  |   |  +------+
+          |-------------------|   |
+      val |     reference     |---+
+          +-------------------+

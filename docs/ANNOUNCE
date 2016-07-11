@@ -1,0 +1,62 @@
+From: Rocco Carbone <rocco@tecsiel.it>
+To: ntop@unipi.it, ntop-dev@unipi.it
+Cc: tcsh@mx.gw.com
+Subject: ANNOUNCE - 'pksh', the Packet Shell
+Date: Sat, 5 Jul 2008 00:00:40 +0200
+
+   Hi all,
+this is to announce the first release of 'pksh', the Packet Shell, that
+is a hack of the popular 'tcsh' for packets, bytes, hosts and protocols
+counts mainly implemented to include passive network monitoring
+functionalities into a shell.
+
+So 'pksh' is a shell.  No, no!  'pksh' is a pcap-based network sniffer,
+like 'tcpdump' and 'ntop'.  No, no again!  'pksh' is both a shell, a
+network sniffer, a query language for network monitoring and finally
+a rendering engine to display in a form readable for humans and
+system administrators all traffic on LAN segments.
+
+It aims to give on character-based terminals the same level of
+information 'ntop' already provides via its embedded web interface.
+
+Contrary to most text-based sniffers, 'pksh' does not continuosly fill
+the terminal with packets/bytes/protocols information, but it allows the
+user to perform his daily job at the shell level and take a look
+at network only via a set of commands implemented as extensions to
+native tcsh's built-ins.
+
+Morevover the output 'pksh' provides can be filtered/sorted/paged/mailed/othered
+using all native Unix commands available at the shell level.
+
+Luca and me agreed to host the project on 'ntop' web server, and to be
+quickly integrated into family of ntop's technologies and products,
+but he is so busy these days and his support is quite limited.
+
+Therefore the first release will have minimal web/mailing lists support.
+
+I set just a temporary download area at:
+
+  http://pksh.tecsiel.it
+  http://82.187.228.118
+
+where you can find further information and the source code, obviously
+released under GLPv3, in a tar-gzipped distribution file named
+pksh-0.1.0.tar.gz
+
+I need your feedback to understand the need of the community for such tool
+in order to continue the effort to add support for more network interfaces,
+more protocols, more built-ins, more data rendering, more of other.
+
+Enjoy
+
+/rocco
+
+-- 
+Rocco Carbone mail-to: <rocco /at/ tecsiel /dot/ it>
+Pisa Italy
+
+Life is in the details
+
+In other words, you are welcome to use, share and improve me.
+You are forbidden to forbid anyone else to use, share and
+improve what I gave you.

@@ -1,0 +1,61 @@
+pksh@eth0 42> pkstatus
+Network interface    : eth0 [Ethernet - EN10MB] [00:0d:9d:4f:50:a6] [mtu 1500] set to promiscuous mode
+Address              : tar.netikos.com [10.96.4.119]
+Internet             : network [10.96.4.0] netmask [255.255.252.0] broadast [10.96.7.255]
+Sampling since       : 8 days, 12:49:09.349853 [Tue Jul 15 17:13:43 2008]
+
+Packets:
+  Received by kernel : 8,720,780
+  Dropped by kernel  : 331
+  Total counted      : 8,720,449
+
+  Packet Size        : 42/179/1514 [Min/Avg/Max]
+  Packet ranges      :
+      Upto75         : 3,768,204 (43.21%)
+      Upto150        : 1,816,642 (20.83%)
+      Upto225        : 174,092  (2.00%)
+      Upto300        : 2,025,527 (23.23%)
+      Upto375        : 178,664  (2.05%)
+      Upto450        : 26,724  (0.31%)
+      Upto525        : 456,474  (5.23%)
+      Upto600        : 13,698  (0.16%)
+      Upto675        : 29,067  (0.33%)
+      Upto750        : 4,949  (0.06%)
+      Upto825        : 4,947  (0.06%)
+      Upto900        : 36,140  (0.41%)
+      Upto975        : 35,563  (0.41%)
+      Upto1050       : 2,742  (0.03%)
+      Upto1125       : 5,170  (0.06%)
+      Upto1200       : 4,901  (0.06%)
+      Upto1275       : 6,987  (0.08%)
+      Upto1350       : 13,393  (0.15%)
+      Upto1425       : 36,367  (0.42%)
+      Upto1514       : 80,198  (0.92%)
+      Above1514      : 0
+
+    Unicast          : 3,888,906 (44.60%)
+    Broadcast        : 4,450,472 (51.03%)
+    Multicast        : 381,071  (4.37%)
+
+    IP               : 6,078,849 (69.71%)
+      TCP            : 2,753,026 (45.29%)
+      UDP            : 3,288,602 (54.10%)
+      ICMP           : 30,582  (0.50%)
+      Other IP       : 6,639  (0.11%)
+    ARP              : 2,252,697 (25.83%)
+    Non-IP           : 388,903  (4.46%)
+
+Bytes:
+  Total counted      :   1.5 GB
+    IP               :   1.2 GB (91.01%)
+    ARP              : 102.0 MB  (7.42%)
+    Non-IP           :  21.0 MB  (1.57%)
+      TCP            : 404.0 MB (35.56%)
+      UDP            : 732.0 MB (64.34%)
+      ICMP           :   1.0 MB  (0.09%)
+      Other IP       : 144.8 Kb  (0.01%)
+
+
+pksh@eth0 43> pkuptime
+ 6:03:31am   up   8 days, 12:49:53,    1 interface
+(eth0) -- tar.netikos.com [10.96.4.119],   8,721,328 Pkts /   1.5 GB,   747 hosts [397 local   350 foreign]

@@ -1,0 +1,139 @@
+
+T O D O:
+========
+
+o strippare il domain name dal nome ed inserire anche la lista strippata per il completion
+
+o Bug
+  eliminare la possibilita' che 2 hosts vadano a finire dentro le tabelle
+  vt-bernardinis.valueteam.com  00:02:3f:21:04:fa 10.96.5.219     Compal Electronics, Inc.      0 day(s) 00:09:15 
+  vt-bernardinis.valueteam.com  00:02:3f:21:04:fa 10.96.5.219     Compal Electronics, Inc.      0 day(s) 00:09:15 
+
+o verificare come mai la prima volta pkfinger non prende il primo argomento
+  eg. pksh 1> pkfinger tar
+      Missing host(s) ("pkfinger --help" for help)
+  ed eventualmente ritornare alla vecchia versione di init.c
+  (senza argc/argv ma solo con progname) ed evitare di usare fake getopt_long()
+  in init.c
+
+o se si parte direttamente con bytes -f la prima volta visualizza anche gli host locali
+  e poi invece smette (vedi il punto precedente)
+
+o verificare se il MAC address di broadcast puo' essere calcolato direttamente dal formato binario
+  senza passare per le stringhe cosi' come si fa per gli indirizzi IP
+
+o attualmente nella struttura dati di interfaccia non si distingue a livello Ethernet e IP
+  (piu' in generale a livello di protocollo) tra bytes/packets inviati e ricevuti
+  ma si fa solo il totale
+
+o sistemare il fatto che il lookup mi da un nome che non mi aspetto
+  (dns.tecsiel.it => tecfirew.tecsiel.it)
+
+o errore in pkstatus (dropped)
+  Dropped by kernel  : 81
+  Dropped by shell   : 81   (quasi impossibile che siano uguali)
+
+o calcolare il network load, Remote host distance
+
+o ntop conta:
+  * numero di pacchetti IP con checksum sbagliato con la funzione in_cksum()
+  * hosts locali che hanno una netmask non corretta
+  * il numero di frammenti IP
+
+o liberare le hash alla chiusura di una interfaccia
+
+o calcolare il tempo di processing di ogni pacchetto
+
+o in hash.h mettere anche un flag per indicare che il campo valore
+  e' solo una referenza piuttosto che un oggetto nuovo cosi'
+  la fase di free e' molto piu' semplice
+
+o cambiare le specifiche di interfaccia della pkopen() e pkclose()
+  dalla sintassi comma separated interfaces in -i interface
+  (forse !!!!)
+
+o rivedere i comandi open e close (eliminare as_parameter)
+
+o aggiungere un flag a pkfilter() per cancellare un filtro gia' settato
+  (se e' possibile con la libpcap())
+
+o assicurarsi che i nomi in $hosts non siano ripetuti
+
+o inserire indicazione transfer rate in pkstatus (pkts/sec tot in out e kbytes/sec tot in out)
+
+o rivedere il comando 'help'
+   tar:shh# help open close ciao
+   Command (ciao) : invalid help
+   close           Close network interface(s)
+   open            Open network interface(s) to look at packets on the network
+
+o verificare se e' possibile eliminare MAX_NUM_DEVICES da shh.h
+   che serve solo al comando lsdev
+
+o You may use the 'hsu' builtin to change identity
+   alla fine di sshinit() in shh.c
+
+o  { "pkrc",        0, "Get/Set run-time parameters"},
+   { "pksu",        0, "Change user ID"},
+   { "pktop",       0, "Display network usage"},
+
+o eliminare la variabile globale boottime da shh.c
+
+o inserire indicazione transfer rate in pkstatus (pkts/sec tot in out e kbytes/sec tot in out)
+
+o controllare cosa succede al prompt e alla interface 'active'
+  se si chiude una interfaccia diversa dalla 'active'
+
+o implementare i comandi
+     counters
+     pkcal
+     mip
+     nbt
+     nrc
+     top
+     su
+
+o se si implementa lo sniffer tramite i threads allora bisogna verificare come
+  fare a rendere non interrompile solo il thread che fa la cattura e non tutta la shell
+
+o verificare quanto costa usare le hash tables native della tcsh
+
+o ottimizzazione delle hash tables (trovare la size fino al momento in cui non ci sono collisioni)
+
+o implementare pkdisable
+
+o implementare in pkfinger
+
+    /* Traffic distribution in terms of packets */
+    packets_distribution (fd, host, current);
+
+    /* Traffic distribution in terms of bytes */
+    bytes_distribution (fd, host, current);
+
+    /* Protocol distribution */
+    protocol_distribution (fd, host, current);
+
+    /* IP Protocol distribution */
+    ip_protocol_distribution (fd, host, current);
+
+    /* Traffic distribution by hour */
+    bytes_all_by_hour (fd, host);
+
+    /* Contacted peers */
+    contacted_peers (fd, host);
+
+    /* TCP/UDP ports usage */
+    ports_usage (fd, host);
+
+o copiare le motivation delle estensioni alla bash
+
+o definire un file HOW-TO-RELEASE con tutto cio' che deve essere controllato prima di una release
+
+o la risoluzione del vendor e dell'hostname puo' essere ritardata al momento
+  della visualizzazione per ottimizzare il processing dei pacchetti
+
+o controllare se servono davvero i campi in interface_t
+  struct timeval started;   /* time interface was enabled to look at pkts             */
+  struct timeval firstpkt;  /* time first packet was captured                         */
+  struct timeval lastpkt;   /* time last packet was captured                          */
+

@@ -1,0 +1,43 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                     _        _
+               _ __ | | _____| |__
+              | '_ \| |/ / __| '_ \
+              | |_) |   <\__ \ | | |
+              | .__/|_|\_\___/_| |_|
+              |_|
+
+             'pksh', the Packet Shell
+
+             (C) Copyright 2003-2009
+    Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+ Released under the terms of GNU General Public License
+ at version 3;  see included COPYING file for details
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Here is an unsorted list of people (hopefully complete)
+who contributed to ideas, patches, software requirements,
+hints, meetings, chats, installation, et al.
+
+And of course everyone who sent comments, suggestions or
+bug-reports.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+T H A N K S
+===========
+
+o Pascal Bleser <pascal.bleser@opensuse.org> on Sat, 05 Jul 2008 21:57:04 +0200
+  sent me patches for ver. 0.1.0 to 'configure' in order to build and package 'pksh'
+  properly as an RPM package for OpenSuse (http://www.opensuse.org) and Fedora 9
+
+o Valeria Lorenzetti <valeria.lorenzetti@gmail.com> on Fri, 18 Jul 16:33:59 +0200
+  give me some nice graphics for the 'pksh' logo
+
+
+
+Thank you guys!
+
+/rocco

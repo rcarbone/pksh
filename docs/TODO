@@ -1,0 +1,72 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                     _        _
+               _ __ | | _____| |__
+              | '_ \| |/ / __| '_ \
+              | |_) |   <\__ \ | | |
+              | .__/|_|\_\___/_| |_|
+              |_|
+
+             'pksh', the Packet Shell
+
+             (C) Copyright 2003-2009
+    Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+ Released under the terms of GNU General Public License
+ at version 3;  see included COPYING file for details
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+This file provides an unsorted list of what needs
+to be done and stuff scheduled for the next release.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+T O D O:
+========
+
+o check for boundaries while decoding (caplen vs len)
+
+
+o add more network interfaces support
+
+  * Token ring
+  * Slip
+  * PPP
+  * FDDI
+  * 802.11 Wireless
+
+
+o add more commands
+
+  * pkpurge to removed idle hosts from internal caches
+  * pkdisable to disable the capture of packets from an interface
+  * pkreset to clean the counters on a given interface
+  * pknetbios
+  * pkcal to show per hour/day/week network usage
+  * traffic
+  * pktop (similar to the top command)
+  * pkversion
+
+
+o protocol distributions
+
+    /* IP Protocol distribution */
+    ip_protocol_distribution (host);
+
+    /* Traffic distribution by hour */
+    bytes_all_by_hour (fd, host);
+
+    /* Contacted peers */
+    contacted_peers (fd, host);
+
+    /* TCP/UDP ports usage */
+    ports_usage (fd, host);
+
+
+o add more shell variables
+  not just a single $pkhosts variable but one per network interface
+
+o free the $hosts variable on interface cleanup
+
+

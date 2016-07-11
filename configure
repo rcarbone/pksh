@@ -1,0 +1,518 @@
+#!/bin/bash
+#
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+#                      _        _
+#                _ __ | | _____| |__
+#               | '_ \| |/ / __| '_ \
+#               | |_) |   <\__ \ | | |
+#               | .__/|_|\_\___/_| |_|
+#               |_|
+#
+#              'pksh', the Packet Shell
+#
+#              (C) Copyright 2008-2009
+#     Rocco Carbone <rocco /at/ ntop /dot/ org>
+#
+#  Released under the terms of GNU General Public License
+#  at version 3;  see included COPYING file for details
+#
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+#
+# This script will attempt to build a develop tree with
+# a patched version of the 'tcsh' shell including extensions
+# for packets capturing (via pcap), packets analisys and
+# reporting via a packet engine written by scratch.
+#
+# This script has been tested with most recent version of
+# tcsh ver. 6.16.00
+#
+# Several tcsh source files need to be patched due to multiple
+# definition of function lex_cleanup() which is also defined in
+# libpcap
+#
+# libpcap.a(scanner.o): In function `lex_cleanup':
+# scanner.c:(.text+0x380): multiple definition of `lex_cleanup'
+# sh.lex.c:276: first defined here
+#
+
+# the name of the game
+PACKAGE=`cat docs/PACKAGE`
+VERSION=`cat docs/VERSION`
+
+# Set PATH to have -n flag echo available on Solaris
+PATH=/usr/local/bin:/usr/ucb:/bin:/usr:/usr/bin
+LINK=/bin/ln
+
+# the pcap library for packet capturing
+MORELIBS="-lpcap -lm -lpthread"
+
+# tcsh source identifiers
+TCSHVERSION=6.16.00
+TCSH=tcsh-$TCSHVERSION
+SOURCES=$TCSH.tar.gz
+MIRROR=ftp://ftp.funet.fi/pub/unix/shells/tcsh
+
+# the build directory
+BUILD=$PACKAGE-$TCSH
+
+# source files
+HEADER=pksh.h
+OTHERH="nic.h ettercap.h"
+SUPPORT="init.c args.c prompt.c glob.c interface.c render.c fmemdmp.c cache.c sort.c interval.c"
+DECODERS="datalinks.c decoders.c"
+CMDADMIN="pkhelp.c pkdev.c pkopen.c pkclose.c pkuptime.c pkenable.c pkfilter.c pkstatus.c pkswap.c"
+CMDVIEWS="bytes.c packets.c pkhosts.c pkarp.c pklast.c pkwho.c pkfinger.c throughput.c protocols.c"
+COMMANDS="$CMDADMIN $CMDVIEWS"
+FILES="$OTHERH $SUPPORT $DECODERS $COMMANDS"
+
+#
+# Return the line in the tcsh file sh.init.c where a specific command
+# *** must *** be inserted to have the given extension $cmd full funtional
+#
+linenumber()
+{
+  cmd=`echo $1`
+  file=`echo $2`
+  case $cmd in
+    pkhelp)     before=popd     ;;
+    pkdev)      before=pkhelp   ;;   # Warning: order in COMMANDS is relevant
+    pkopen)     before=popd     ;;
+    pkclose)    before=pkdev    ;;   # Warning: order in COMMANDS is relevant
+    pkuptime)   before=popd     ;;
+    pkenable)   before=pkhelp   ;;   # Warning: order in COMMANDS is relevant
+    pkfilter)   before=pkhelp   ;;   # Warning: order in COMMANDS is relevant
+    pkstatus)   before=pkuptime ;;   # Warning: order in COMMANDS is relevant
+    pkswap)     before=pkuptime ;;   # Warning: order in COMMANDS is relevant
+    bytes)      before=case     ;;
+    packets)    before=pkclose  ;;   # Warning: order in COMMANDS is relevant
+    pkhosts)    before=pkopen   ;;   # Warning: order in COMMANDS is relevant
+    pkarp)      before=pkclose  ;;   # Warning: order in COMMANDS is relevant
+    pklast)     before=pkopen   ;;   # Warning: order in COMMANDS is relevant
+    pkwho)      before=popd     ;;
+    pkfinger)   before=pkhelp   ;;   # Warning: order in COMMANDS is relevant
+    throughput) before=time     ;;
+    protocols)  before=pushd    ;;
+    *)          before=xxx      ;;
+ esac
+ row=0
+ if [ $before != xxx ]; then
+   row=`grep -n \"$before\" $file | head -1 | cut -d":" -f 1`
+ fi
+ echo $row
+}
+
+
+# Unfortunately the Solaris shell /bin/sh does not support back-tick stuff like
+# var="$var `...`" so I changed the code to use the temporary variable $replace
+# in the following code
+
+# package source files
+PKGSRCS="$HEADER $PACKAGE-list.h $PACKAGE-hash.h $PACKAGE-list.c $PACKAGE-hash.c $PACKAGE-nic.h $PACKAGE-vendor.c $PACKAGE-ettercap.h $PACKAGE-ettercap.c $PACKAGE-wrapper.c"
+for file in $SUPPORT $DECODERS $COMMANDS; do
+  replace=`echo $file | sed -e "s|\(.*\).c|$PACKAGE-\1.c|"`
+  PKGSRCS="$PKGSRCS $replace"
+done
+
+# package object files
+PKGOBJS="$PACKAGE-list.o $PACKAGE-hash.o $PACKAGE-vendor.o $PACKAGE-ettercap.o $PACKAGE-wrapper.o"
+for file in $SUPPORT $DECODERS $COMMANDS; do
+  replace=`echo $file | sed -e "s|\(.*\).c|$PACKAGE-\1.o|"`
+  PKGOBJS="$PKGOBJS $replace"
+done
+
+# package builtins
+for file in $COMMANDS; do
+  replace=`echo $file | sed -e 's|\(.*\).c|\1|'`
+  PKGCMDS="$PKGCMDS $replace"
+done
+
+#
+# Main processing
+#
+
+# Download the tar file (if not yet here)
+if [ ! -f pub/$SOURCES ]; then
+  # Check if a local copy is available; otherwise download from the Internet
+  if [ -f $HOME/$SOURCES ]; then
+    echo "Found sources in $HOME/$SOURCES ..."
+    cp $HOME/pub/$SOURCES pub/$SOURCES
+  else
+    echo "Unable to find local sources in pub/$SOURCES:$HOME/pub/$SOURCES"
+    echo "Fetching sources from the Internet..."
+    echo
+    if [ ! -d pub ]; then
+      mkdir pub
+    fi
+    (cd pub && wget $MIRROR/$SOURCES)
+    if [ ! -f pub/$SOURCES ]; then
+      echo "It seems you was not able to download the tcsh's sources from Internet.  Cannot continue" && exit 0
+    fi
+  fi
+else
+  echo "Using sources pub/$SOURCES"
+fi
+
+# Create the build directory
+if [ ! -d $BUILD ]; then
+  echo "Creating $BUILD build directory"
+  mkdir $BUILD
+fi
+
+# Create the two needed header files nic.h and ettercap.h
+# by converting text files to arrays to be included
+if [ ! -f src/nic.h ]; then
+  (cd src && make nic.h)
+fi
+if [ ! -f src/ettercap.h ]; then
+  (cd src && make ettercap.h)
+fi
+
+#
+# Patch src file $HEADER
+#
+echo -n "Patching source file $HEADER .........."
+cat src/$HEADER | sed -e 's|#include "hash.h"|#include "pksh-hash.h"|' > $BUILD/$HEADER
+for cmd in `echo $PKGCMDS | sort`; do
+  cat $BUILD/$HEADER | echo "int $PACKAGE"_$cmd "(int argc, char * argv []);" >> $BUILD/$HEADER
+done
+echo " done!"
+
+#
+# Patch src file wrapper.c
+#
+echo -n "Patching source file wrapper.c ......."
+cp src/wrapper.c $BUILD/$PACKAGE-wrapper.c
+
+for cmd in `echo $PKGCMDS`; do
+  var="static Char $cmd [] = {"
+  while [ $cmd ]; do
+    first=`echo $cmd | cut -c 1`
+    rest=`echo $cmd | cut -c 2-`
+    cmd=$rest
+    var="$var '$first', "
+  done
+  var="$var '\0' };"
+  echo "$var" >> $BUILD/$PACKAGE-wrapper.c
+done
+
+echo >> $BUILD/$PACKAGE-wrapper.c
+echo "/* The list of extensions to automatically update the $hosts variable per interface */" >> $BUILD/$PACKAGE-wrapper.c
+echo "static Char * extensions [] = {" >> $BUILD/$PACKAGE-wrapper.c
+for cmd in `echo $PKGCMDS`; do
+  echo -n "$cmd, " >> $BUILD/$PACKAGE-wrapper.c
+done
+echo "NULL };" >> $BUILD/$PACKAGE-wrapper.c
+echo >> $BUILD/$PACKAGE-wrapper.c
+
+for cmd in `echo $PKGCMDS`; do
+  echo "void tcsh_$cmd (Char ** v, struct command * c) { USE(c); tcsh_xxx (v, pksh_$cmd); } " >> $BUILD/$PACKAGE-wrapper.c
+done
+echo " done!"
+
+#
+# Patch src file list.h
+#
+echo -n "Patching source file list.h .........."
+cp src/list.h $BUILD/$PACKAGE-list.h
+echo " done!"
+
+#
+# Patch src file list.c
+#
+echo -n "Patching source file list.c .........."
+cat src/list.c | sed -e 's|#include "list.h"|#include "pksh-list.h"|' > $BUILD/$PACKAGE-list.c
+echo " done!"
+
+#
+# Patch src file hash.h
+#
+echo -n "Patching source file hash.h .........."
+cat src/hash.h | sed -e 's|#include "list.h"|#include "pksh-list.h"|' > $BUILD/$PACKAGE-hash.h
+echo " done!"
+
+#
+# Patch src file hash.c
+#
+echo -n "Patching source file hash.c .........."
+cat src/hash.c | sed -e 's|#include "hash.h"|#include "pksh-hash.h"|' > $BUILD/$PACKAGE-hash.c
+echo " done!"
+
+#
+# Patch src file vendor.c
+#
+echo -n "Patching source file vendor.c ........"
+cat src/vendor.c | sed -e 's|#include "hash.h"|#include "pksh-hash.h"|' > $BUILD/$PACKAGE-vendor.c
+
+cp $BUILD/$PACKAGE-vendor.c $BUILD/$PACKAGE-vendor.c.tmp
+cat $BUILD/$PACKAGE-vendor.c.tmp | sed -e 's|#include "nic.h"|#include "pksh-nic.h"|' > $BUILD/$PACKAGE-vendor.c
+rm -f $BUILD/$PACKAGE-vendor.c.tmp
+
+echo " done!"
+
+#
+# Patch src file ettercap.c
+#
+echo -n "Patching source file ettercap.c ......"
+cat src/ettercap.c | sed -e 's|#include "hash.h"|#include "pksh-hash.h"|' > $BUILD/$PACKAGE-ettercap.c
+
+cp $BUILD/$PACKAGE-ettercap.c $BUILD/$PACKAGE-ettercap.c.tmp
+cat $BUILD/$PACKAGE-ettercap.c.tmp | sed -e 's|#include "ettercap.h"|#include "pksh-ettercap.h"|' > $BUILD/$PACKAGE-ettercap.c
+rm -f $BUILD/$PACKAGE-ettercap.c.tmp
+
+echo " done!"
+
+# Move to the build directory
+cd $BUILD
+
+# Untar sources (if needed)
+if [ ! -d nls ]; then
+  echo "Untarring sources (read-write tree) in $BUILD"
+  tar xfz ../pub/$SOURCES
+  mv $TCSH/* .
+  rmdir $TCSH
+fi
+
+# Add links to project sources to the tree
+for src in $FILES; do
+  if [ ! -h $PACKAGE-$src ]; then
+    if [ -f ../src/$src ]; then
+      $LINK -sf ../src/$src $PACKAGE-$src
+    else
+      echo "Warning: source file src/$src does not exist"
+    fi
+  fi
+done
+
+echo "Patching now write tree .............."
+
+#
+# Patch Makefile.in
+#
+#   o change the name to the executable
+#   o change the name to the installed binary
+#   o add search path for <event.h> to EXTRAFLAGS
+#   o add more to EXTRALIBS
+#   o add ${PKGSRCS} to the macro SHSRCS
+#   o add ${PKGOBJS} to the macro SHOBJS
+#   o add macro PKGSRCS= with project source files
+#   o add macro PKGOBJS= with project object files
+#   o change the main target to use BUILD
+#
+
+echo -n "  patching Makefile.in ..............."
+if [ ! -f Makefile.in.ORG ]; then
+  cp Makefile.in Makefile.in.ORG
+fi
+
+cp Makefile.in.ORG Makefile.in.tmp
+cat Makefile.in.tmp | sed -e 's|BUILD=tcsh|BUILD=pksh|' > Makefile.in
+
+cp Makefile.in Makefile.in.tmp
+cat Makefile.in.tmp | sed -e 's|/tcsh|/pksh|' > Makefile.in
+
+cp Makefile.in Makefile.in.tmp
+cat Makefile.in.tmp | sed -e "s|EXTRALIBS =\(.*\)|EXTRALIBS = $MORELIBS \1|" > Makefile.in
+
+cp Makefile.in Makefile.in.tmp
+cat Makefile.in.tmp | sed -e 's|SHSRCS=\(.*\)|SHSRCS=\1 ${PKGSRCS}|' > Makefile.in
+
+cp Makefile.in Makefile.in.tmp
+cat Makefile.in.tmp | sed -e 's|OBJS= ${SHOBJS}\(.*\)|OBJS= ${SHOBJS}\1 ${PKGOBJS}|' > Makefile.in
+
+line=`grep -n "SHSRCS=" Makefile.in | cut -d":" -f 1`
+cp Makefile.in Makefile.in.tmp
+cat Makefile.in.tmp | sed "$line i PKGSRCS= $PKGSRCS" > Makefile.in
+
+line=`grep -n "OBJS=" Makefile.in | tail -1 | cut -d":" -f 1`
+cp Makefile.in Makefile.in.tmp
+cat Makefile.in.tmp | sed "$line i PKGOBJS= $PKGOBJS" > Makefile.in
+
+cp Makefile.in Makefile.in.tmp
+cat Makefile.in.tmp | sed -e 's|tcsh$(EXEEXT)|${BUILD}|' > Makefile.in
+
+rm -f Makefile.in.tmp
+echo " done!"
+
+#
+# Patch sh.c
+#
+#   o add the initialization function
+#   o substitute lex_cleanup
+#
+echo -n "  patching sh.c ......................"
+if [ ! -f sh.c.ORG ]; then
+  cp sh.c sh.c.ORG
+fi
+
+# Add my inizialization function call
+cp sh.c.ORG sh.c.tmp
+line=`grep -n 'process(setintr)' sh.c.tmp | cut -d":" -f 1`
+cat sh.c.tmp | sed "$line i pkshinit (progname);" > sh.c
+
+# Substitute lex_cleanup due to symbol multiple definition in libpcap
+cp sh.c sh.c.tmp
+cat sh.c.tmp | sed -e "s|lex_cleanup|pksh_lex_cleanup|" > sh.c
+
+rm -f sh.c.tmp
+echo " done!"
+
+#
+# Patch sh.decls.h
+#
+#   o add the function declarations
+#   o substitute lex_cleanup
+#
+echo -n "  patching sh.decls.h ................"
+if [ ! -f sh.decls.h.ORG ]; then
+  cp sh.decls.h sh.decls.h.ORG
+fi
+
+cp sh.decls.h.ORG sh.decls.h
+for cmd in $PKGCMDS; do
+  cp sh.decls.h sh.decls.h.tmp
+  line=`grep -n '#define' sh.decls.h.tmp | head -1 | cut -d":" -f 1`
+  line=`expr $line + 2`
+  cat sh.decls.h.tmp | sed "$line i extern void tcsh_$cmd (Char **, struct command *);" > sh.decls.h
+done
+
+cp sh.decls.h sh.decls.h.tmp
+line=`grep -n '#define' sh.decls.h.tmp | head -1 | cut -d":" -f 1`
+line=`expr $line + 2`
+cat sh.decls.h.tmp | sed "$line i /* builtin extensions for pksh */" > sh.decls.h
+
+# Substitute lex_cleanup due to symbol multiple definition in libpcap
+cp sh.decls.h sh.decls.h.tmp
+cat sh.decls.h.tmp | sed -e "s|lex_cleanup|pksh_lex_cleanup|" > sh.decls.h
+
+rm -f sh.decls.h.tmp
+echo " done!"
+
+#
+# Patch sh.exp.c
+#
+#   o substitute lex_cleanup
+#
+echo -n "  patching sh.exp.c .................."
+if [ ! -f sh.exp.c.ORG ]; then
+  cp sh.exp.c sh.exp.c.ORG
+fi
+
+# Substitute lex_cleanup due to symbol multiple definition in libpcap
+cat sh.exp.c.ORG | sed -e "s|lex_cleanup|pksh_lex_cleanup|" > sh.exp.c
+
+echo " done!"
+
+#
+# Patch sh.glob.c
+#
+#   o substitute lex_cleanup
+#
+echo -n "  patching sh.glob.c ................."
+if [ ! -f sh.glob.c.ORG ]; then
+  cp sh.glob.c sh.glob.c.ORG
+fi
+
+# Substitute lex_cleanup due to symbol multiple definition in libpcap
+cat sh.glob.c.ORG | sed -e "s|lex_cleanup|pksh_lex_cleanup|" > sh.glob.c
+
+echo " done!"
+
+#
+# Patch sh.lex.c
+#
+#   o substitute lex_cleanup
+#
+echo -n "  patching sh.lex.c .................."
+if [ ! -f sh.lex.c.ORG ]; then
+  cp sh.lex.c sh.lex.c.ORG
+fi
+
+# Substitute lex_cleanup due to symbol multiple definition in libpcap
+cat sh.lex.c.ORG | sed -e "s|lex_cleanup|pksh_lex_cleanup|" > sh.lex.c
+
+echo " done!"
+
+#
+# Patch tc.func.c
+#
+#   o substitute lex_cleanup
+#
+echo -n "  patching tc.func.c ................."
+if [ ! -f tc.func.c.ORG ]; then
+  cp tc.func.c tc.func.c.ORG
+fi
+
+# Substitute lex_cleanup due to symbol multiple definition in libpcap
+cat tc.func.c.ORG | sed -e "s|lex_cleanup|pksh_lex_cleanup|" > tc.func.c
+
+echo " done!"
+
+#
+# Patch tc.sched.c
+#
+#   o substitute lex_cleanup
+#
+echo -n "  patching tc.sched.c ................"
+if [ ! -f tc.sched.c.ORG ]; then
+  cp tc.sched.c tc.sched.c.ORG
+fi
+
+# Substitute lex_cleanup due to symbol multiple definition in libpcap
+cat tc.sched.c.ORG | sed -e "s|lex_cleanup|pksh_lex_cleanup|" > tc.sched.c
+
+echo " done!"
+
+#
+# Patch sh.init.c
+#
+#   o add entries to the table of builtins => struct biltins bfunc[]
+#
+echo "  patching sh.init.c ................."
+if [ ! -f sh.init.c.ORG ]; then
+  cp sh.init.c sh.init.c.ORG
+fi
+
+# Add commands to the table of builtins
+cp sh.init.c.ORG sh.init.c
+for cmd in $PKGCMDS; do
+  cp sh.init.c sh.init.c.tmp
+  line=`linenumber $cmd sh.init.c.tmp`
+  if [ "$line" != "0" ]; then
+    cat sh.init.c.tmp | sed "$line i { \"$cmd\", tcsh_$cmd, 0, INF }, /* extension for pksh */" > sh.init.c
+    echo "           $cmd ... ok"
+  else
+    echo "           $cmd ... failed"
+  fi
+done
+
+rm -f sh.init.c.tmp
+echo "                                       done!"
+
+# apply tcsh patches
+if [ -n "$TCSH_PATCHES" ]; then
+	echo
+	echo "Applying RPM patches"
+	for p in $TCSH_PATCHES; do
+		echo "- $p"
+		patch -p0 -b -z.orig -i "$p" || exit 42
+	done
+	echo
+fi
+
+# Attempt to configure the tcsh
+if [ ! -f Makefile ]; then
+  eval ${TCSH_CONFIGURE_COMMAND-./configure}
+fi
+
+# Check if the list of COMMANDS is already included in Makefile
+for file in $COMMANDS; do
+  found=`grep PKGSRCS= Makefile | grep $file`
+  if [ ! "$found" ]; then
+    eval ${TCSH_CONFIGURE_COMMAND-./configure} && break
+  fi
+done
+
+test -n "$PKSH_NO_MAKE" || make
+cd ..
+
+exit 0

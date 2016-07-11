@@ -1,0 +1,374 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                     _        _
+               _ __ | | _____| |__
+              | '_ \| |/ / __| '_ \
+              | |_) |   <\__ \ | | |
+              | .__/|_|\_\___/_| |_|
+              |_|
+
+             'pksh', the Packet Shell
+
+             (C) Copyright 2003-2009
+    Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+ Released under the terms of GNU General Public License
+ at version 3;  see included COPYING file for details
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+1998: ntop
+==========
+
+Several years ago Luca Deri, a colleague of mine at Finsiel S.p.A.
+labs in Pisa, during a coffee break at work, told me that he was
+near to finish 'ntop' a network monitoring tool he developed under
+Linux and he wanted and planned to release it under GPL.
+
+His first creature was a clone of the Unix 'top' utility managing and
+showing hosts and protocols rather than processes.  The first version
+of 'ntop' had only a CLI interface, but Luca quickly started adding
+functionalities both in terms of protocol decoders and data accessibility.
+
+He worked hard on his idea to embed into 'ntop' an its own web server
+so the lot of information the tool was capable to collect could also be
+made available to remote browsers via the HTTP protocol.  When he had
+finished to implement such idea, 'ntop' for an undefined number of weeks,
+or perhaps months, was distributed offering two different interfaces:
+the first and classic CLI tool (if I remember well the -i flag passed to
+the binary program enabled this kind of interface) and the most modern
+'ntop' accessible via its own embedded web server.
+
+Over the time Luca dropped his support to the CLI 'ntop' tool in favor
+of the more powerful and promising web/html version, but I do not remember
+the period.
+
+
+2000: intop
+===========
+
+At the beginning of year 2000 I was working on an implementation of a
+protocol over TCP/IP for my company Finsiel S.p.A. and I needed a network
+monitoring tool.  Our PDUs were codified using ASN.1 so I started
+to hack 'tcpdump' to have a good understanding and a well formatted output
+of such PDUs.
+
+We also had a public server accessible from the Internet for an international
+search and retrieval project and I also wanted to have statistics access and
+network monitoring for such service.
+
+So I started to use 'ntop' as network tool.  But I am a programmer and was
+curious enough to take a look at ntop's source code.  And I started talks and
+comments with Luca about improvements to ntop's features and source code
+organization.
+
+Moreover I am a bare engineer and often prefer to access data via the keyboard
+rather than moving and clicking the mouse.  So I talked with Luca about the need
+to restore 'ntop' CLI and I started to write 'intop', a (tiny) keyboard-browser
+program based on the 'ntop' packet sniffer and the libpcap Packet Capture library.
+
+First 'intop' (interactive-ntop) version was published as 0.0.1 in May 2000 and
+it was included both in the ntop's development tree and in ntop's distribution.
+
+'intop' was only an attempt to demonstrate that 'ntop' could be several
+things at the same time.  A programmable network packets engine before
+all, a GUI based on html and a query language based on mouse events.
+Still too complicated for bare engineers like me and hackers.  Bare system
+administrators often want 'less' than html.  They hate mouse and have
+dirty fingers, too dirty to leave the keyboard.  For example I am so
+satisfied with my keyboard and tend to not use the mouse (apart Google).
+
+These days I started to hack both on 'ntop' and 'intop' and improved and
+maintained it for a certain number of months.  Unfortunately the ntop's
+initialization code was not ready to be used by differents main()
+programs at the days 'intop' was being developed, so 'intop' was no really
+usable for a long run (more than a couple of hours).  Often it crashed
+to due unitialized code in the ntop's network packet engine and the errors
+were often unreproducible.
+
+'intop' was a pain, but the idea was clear and well implemented.
+
+During 'intop' development I was really unsatisfied with the functionalities
+of this simple CLI application.  Often the host tables were so wide
+(hundreds of hosts, one per line) and so rich of information that
+a character-based terminal seemed too inadeguate for data rapresentation.
+
+The simple CLI 'intop' lacked the filtering and sorting methods at native
+Unix level, in order to limit the amount of content to show, and more in general
+the pipe (|) mechanism.
+
+So I realized the absolute need to have data (and host tables) sorted
+using the native Unix 'sort' program or filtered via the native Unix
+'grep' utility, or simply viewed with the widely available Unix 'less'
+viewer.  So my first idea was to add the pipe (|) mechanism to 'intop'.
+And perhaps I started to implement it (but I am not sure of this).
+
+Moreover during first 'intop' days development, 'ntop' changed too fast
+due to Luca's needs to add functionalities, and add, and add...  So,
+not only the API to the ntop's packet capture engine was not well defined
+and unstable, but also the internal data were really usable with a hard,
+too hard, effort, and I was too often fustigated.
+
+Luca had no time to hack both on 'ntop' and 'intop' each time he changed
+ntop's internal data structures and I was not fast enough to follow his
+changes.  So often 'intop' did not compile and often it unexpectly crashed
+after a simple recompilation with the new cvs ntop's sources.
+
+Due the fact that 'intop' had its own subdirectory in the cvs tree
+and by default the Makefile at the top level attempted to compile both
+binaries 'ntop' and 'intop' (in this order), many users claimed about
+'intop' compilation problems, and Luca decided to not more distribute it.
+
+I dropped 'intop' because of that and other personal external factors.
+
+
+2001: yash development
+======================
+
+In 2001 I was working on a z39.50 prootocol and application development
+for my company Finsiel S.p.A. and I needed a client application with
+native, at Unix level, sorting and filtering capabilities to look at
+fields in large records of very large result sets.  Just to make my life
+easier at office.
+
+These days I was seriously thinking and convinced about my crazy
+idea to use the shell as a general and universal client with extended
+functionalities depending on the application context.  And I was firmly
+convinced the same concepts were applicable to several application domains.
+So, in a word, the same shell with different built-ins could be used
+for networking, or databases, or any other specific context.
+
+I had my own CLI z3050 client application, with a data reading loop,
+a well designed and extensible command interpreter, a command line
+history and completion via the GNU readline, but I was still
+unsastified of my work.  I needed more, much more, on the same way
+the shells offer: the ability to execute external applications and
+the pipes to link the flow of data between programs.
+
+What is a CLI application?  Simply a restricted shell.
+And what is a shell?  Think at it as an enhanced version
+of a CLI application.
+
+So why programmers still insist to write CLI applications?
+Why they do not extend the shells to have the functionalities
+they require for their CLI applications?
+
+I was really strugled with these questions, but I had no answers
+these days.
+
+So I had no alternatives: I had to copy and embed the shell
+functionalities into my CLI or extend the shell with all it lacked
+for my current application domain.
+
+The first way seemed too complicated, mainly because the shells does
+not often offer well reusable code. In fact they tend to use global
+variables, increasing the efficency but confusing the programmers.
+
+These days I had no idea how to implement such crazy idea using one
+of the available shells.  So a nigth, a long nigth, I take a deep breath
+and I started to take a look at the tcsh source code, my preferred and
+login shell since my first access on Unix systems.  I learnt much of the
+internal tcsh source code, its organization, its internal data structures
+and its extension mechanisms.  And I was ready to hack at the tcsh code in a few.
+
+In less than a week I had a prototype z39.50 application, not well engineered,
+but ready to be used at my keyboard with all my required extensions to access
+z39.50 records over the Internet.  Yup!!!  I finally had the answers to my
+doubts.  A serious motivation confirmed by experience in favor to drop the
+CLI and learn much of the shells.
+
+The project was named 'yash' [Yaz Another Shell], which, how it is easy to
+understand now, was a hack of the so popular 'tcsh', with extensions to
+include z3950 client facilities.
+
+The YAZ Toolkit by Index Data was used as z3950 back-end to access the
+network and tcsh 6.11.00 as the front-end to interface the user at
+the keyboard.
+
+I used 'yash' as my preferred daily shell (e.g. default shell in /etc/passwd)
+because none of the existing functionalities of the original tcsh were lost.
+I implemented a lot of functions (declared as built-ins for the tcsh) to add
+basic search and retrieval functions to the shell.
+
+I used 'yash' to capture and show all z3950 record(s) over the Internet
+I wanted, all without leaving the shell and start a new application,
+exactly while doing my daily job with the shell.  With job control,
+filtering and piping data.  Exactly all that I wanted to have.
+
+'yash' was never published on the Internet because of a lot of
+personal incidents happened in that period.  So the code was only
+left on my pc and none used it for a long time.
+
+
+2001: ntopsh
+============
+
+In parallel with 'yash' development, which was started mainly to make
+my life easier at work, I began for fun the development of 'ntopsh', which
+in my mind was the enhanced version of 'intop' written on the tcsh
+to have sorting and filtering on the command line using external
+Unix command via the pipe (|) mechanism.
+
+It was another clone of the tcsh with built-ins extensions to include
+ntop powered functionalities just to demonstrate the theory that extensions
+to the shells are applicable to several domains.
+
+I was so excited to issue on the command line commands such as:
+
+<fantastic>
+ntopsh @eth0> nls | grep google
+
+ntopsh @eth0> nls | wc -l
+
+ntopsh @eth0> nls -l | cut -d ' ' -f 3-4
+
+ntopsh @eth0> nls -l | mail -s "ntop's hosts on eth0 at `uname -n` as `date`" boss@ntop.org
+
+</fantastic>
+
+where 'nls' in my crazy mind should be a query command on the internal
+ntop's tables.  I really was so excited.  And I started again to hack
+on the tcsh to add built-ins extensions to dynamically start/stop/query
+network interfaces via 'ntop' network packets engine.  All dynamic.
+Really all, protocols, interfaces, bytes and packets counters, via
+command line commands while doing my current daily jobs.  And so on.
+Without limits at all.  A dirty finger query language on ntop's internal
+data using all the native Unix commands.  Fantastic.   All the ntop's
+collected information made available at the Unix level.  Just to eat
+them at dinner or be used for complicated network monitoring problems.
+
+Too beatiful to be true.  I had a prototype in less than 1 week, a shell
+with native packet capture capability and a Unix-like query language
+to have well formatted host tables on character-based terminals
+to be viewed using 'less' also if they were so wide.
+
+These days ntop's embedded web daemon still offered several pages with
+so much information that was too difficult to reproduce on the terminal,
+or at least they may be reproduced by splitting data thet produced using
+several commands.
+
+So I did my best to name and implement 'ntopsh' commands, as particular
+views of the ntop's html pages.
+
+And I also tried to go ahead with shell-specific features.
+
+Most 'ntopsh' commands already had 'nhosts' completions and globbing
+e.g. I issue commands in 'ntopsh' such as:
+ ntopsh@eth0> narp 192.168.TAB
+ and I had completed the list of all the hosts starting at given prefix,
+
+ ntopsh@eth0> narp 192.168.*
+ to show the ntop ARP table for all the hosts matching the given prefix.
+
+Immediately after the sniffing was started 'ntopsh' saved the list of all
+the hosts of the active interface in the predefined shell-variable $nhosts.
+So I also can issue shell commands such:
+# echo $nhosts
+
+I said to Luca that it was impossible with html :-)
+
+Moreover I implemented sorting by each columns of each table and I had
+a powerful rendering engine.  For example the output of each command
+can be customized by deleting the default columns and adding those of
+interest via command line options.
+
+In a word I had a vision of my network completely different from that
+provided by the ntop web daemon, using the same data.
+
+But I was also confident that I was so far to include all that what
+real a networker needed.
+
+Unfortunately also the 'ntopsh' shell had usual crashes due to wrong
+initialization problems that were also common to 'intop'.  I had no able
+to well initialize the ntop's engine in all its requirements and I found
+a lot of difficulties to understand how to patch both my code and/or 'ntop'.
+
+The project had a major interruption because I lost interest in software
+development due to phisical condition of my daughter Cecilia, so the
+'ntopsh' was never finished and published.
+
+
+2003: yash release
+==================
+
+Looking across my dead file systems I discovered the old project 'yash'
+I was working on during 3Q 2001, just before a lot of incidents happened
+to me and my wonderful daughter Cecilia.
+
+I hacked a bit again and in April I released 'yash' [Yaz Another Shell]
+under GPL for public consumption.
+
+The original post can be found on the Internet at:
+
+  http://lists.indexdata.dk/pipermail/yazlist/2003-April/000540.html
+
+with some comments at:
+
+  http://lists.indexdata.dk/pipermail/yazlist/2003-April/000541.html
+  http://lists.indexdata.dk/pipermail/yazlist/2003-April/000542.html
+
+
+
+2004: nsh (formerly ntopsh)
+===========================
+
+At the beginning of year 2004 I had feeling 'ntop' was ready for another
+hack and I started 'nsh', the ntop shell, starting from the old project
+'ntopsh' and adapted to compile with the new ntop's sources version 3.0pre1.
+
+'nsh' acted like 'tcsh' but produced outputs some of the ntop reports as normal,
+well formatted for better understanding, stdout text.
+
+The project did not have its own subdirectory into ntop development tree
+because Luca and me agreed for a separate development repository.
+
+I had 'nsh' running on Linux machines (both GNU/Debian 3.0 testing/unstable
+and Red Hat Linux release 9 (Shrike)) with the following functionalities
+available:
+
+nsh@eth0 33> nbuiltins
+nsh implements the following built-ins as extensions to the tcsh commands:
+[commands enclosed in '<>' are implemented but they are still in alpha stage]
+ 
+ close          filter         interface      lsdev         <mip>
+ narp          <nbt>          <nbuiltins>    <ncal>          nfinger
+<nhelp>         nhosts         nlast         <nrc>          <nsu>
+ ntop           nuptime       <nwho>          open           packets
+ protocols      services       sniff          swap
+throughput
+<traffic>
+
+nsh@eth0 34> nuptime 
+ 7:03pm   up   6 days, 10:44:07,    1 interface
+(eth0) -- sed.netikos.com [172.22.4.114],   61 hosts,   4,879,457 Pkts/ 622.9 MB
+
+
+Yup! I had it running without crash for 6 days !!!! mainly because in the years
+ntop's stability reached an acceptable level and I was careful to perform the correct
+inizializations steps, in the correct order, to use the ntop's packet engine.
+
+'nsh' were released on the Internet as version 0.0.3 on Feb 2004, but the community
+reported no special interest with it, apart some gentle australian soul.
+
+So, the lack of interest of the community combined with the usual difficulties
+to follow Luca's quick changes, slowly dropped also my interest in such monitoring
+tool.
+
+
+2008: pksh, the Packet Shell
+============================
+
+Currently I concluded 'ntop' is a monolithic program not a library or a
+programmable environment and maybe it will never do for several reasons.
+
+So all the attempts to use it a programmable network packets engine
+will be really hard to implement because there are so much dependencies
+from ntop's internal data and its behaviour.  Moreover Luca does not
+believe too much in such idea and his contribute is still limited.
+
+So I started again by scratch, with the main goal, in the short period,
+to have just another useful network monitoring tool and the true goal,
+in the long period, to have a robust and widely used component of the
+ntop's family of technologies and products.
+
+/rocco

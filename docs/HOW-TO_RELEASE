@@ -1,0 +1,8 @@
+1. change version number in docs/VERSION
+2. change version and release date in src/pksh.h
+3. change version and release date in docs/pksh.1
+4. update ChangeLog
+5. update NEWS
+6. update html pages (download.html and releases.html and manual.html)
+
+

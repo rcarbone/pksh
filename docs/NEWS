@@ -1,0 +1,42 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                     _        _
+               _ __ | | _____| |__
+              | '_ \| |/ / __| '_ \
+              | |_) |   <\__ \ | | |
+              | .__/|_|\_\___/_| |_|
+              |_|
+
+             'pksh', the Packet Shell
+
+             (C) Copyright 2003-2009
+    Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+ Released under the terms of GNU General Public License
+ at version 3;  see included COPYING file for details
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+The file NEWS contains a chronology of releases
+and major milestone versions.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+  N E W S
+  =======
+
+  =-=- 2008 Jul 24 =-=-
+
+* Public release pksh ver. 0.2.1  Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+  o Include passive OS fingeprinters support based on 'ettercap' database
+
+
+  =-=- 2009 Jun 14 =-=-
+
+* Public release pksh ver. 0.2.2  Rocco Carbone <rocco /at/ ntop /dot/ org>
+
+  o A maintenance release to mark the start
+  o Use tcsh-6.16.00
+  o Use libpcap 1.0.0
+  o Use latest 'oui.txt' available from IEEE web site
