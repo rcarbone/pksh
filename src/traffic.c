@@ -1,31 +1,19 @@
 /*
- * traffic.c - Display detailed info about the traffic on network interface(s)
+ * pksh - The Packet Shell
  *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *                    _        _
- *              _ __ | | _____| |__
- *             | '_ \| |/ / __| '_ \
- *             | |_) |   <\__ \ | | |
- *             | .__/|_|\_\___/_| |_|
- *             |_|
+ * R. Carbone (rocco@tecsiel.it)
+ * 2003, 2008-2009, 2022
  *
- *            'pksh', the Packet Shell
+ * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- *            (C) Copyright 2003-2009
- *   Rocco Carbone <rocco /at/ ntop /dot/ org>
- *
- * Released under the terms of GNU General Public License
- * at version 3;  see included COPYING file for details
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *
+ * Display detailed info about the traffic on network interface(s)
  */
 
 
-/* Operating System header file(s) */
+/* System headers */
 #include <stdlib.h>
 
-/* Private header file(s) */
+/* Project header */
 #include "pksh.h"
 
 
@@ -260,6 +248,10 @@ int pksh_traffic (int argc, char * argv [])
       /* Scan the hosts cache to display data according to user choices */
       for (srchosts = host = hostsall (interface); host && * host; host ++)
 	{
+	  /* Check for multicast packets */
+	  if ((* host) -> hwaddress && multicast ((* host) -> hwaddress))
+	    continue;
+
 	  /* Not not include id-less hosts (damn threads!) */
 	  if (hostipless (* host) && ! (* host) -> hwaddress)
 	    continue;

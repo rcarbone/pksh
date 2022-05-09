@@ -1,43 +1,74 @@
 /*
- * pkdev.c - List all network interfaces suitable for being used with the Packet Shell
+ * pksh - The Packet Shell
  *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *                    _        _
- *              _ __ | | _____| |__
- *             | '_ \| |/ / __| '_ \
- *             | |_) |   <\__ \ | | |
- *             | .__/|_|\_\___/_| |_|
- *             |_|
+ * R. Carbone (rocco@tecsiel.it)
+ * 2003, 2008-2009, 2022
  *
- *            'pksh', the Packet Shell
+ * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- *            (C) Copyright 2003-2009
- *   Rocco Carbone <rocco /at/ ntop /dot/ org>
+ * List all network interfaces suitable for being used with the Packet Shell
  *
- * Released under the terms of GNU General Public License
- * at version 3;  see included COPYING file for details
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *
+ * Show the list of available network interfaces attached to the system.
+ * To be included in the list the interface must be configured up
+ * and it should be accessible via the pcap library
  */
 
 
-/* Operating System header file(s) */
+/* System headers */
 #include <errno.h>
 #include <unistd.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
-#if defined(sun)
-# include <sys/sockio.h>
-#endif
 
-/* Private header file(s) */
+/* Project header */
 #include "pksh.h"
 
 
-/* How to use this command */
-static void usage (char * command)
+/* Identifiers */
+#define NAME         "pkdev"
+#define BRIEF        "Display the list of network interface(s) that can be used to look at packets on the network"
+#define SYNOPSIS     "pkdev [options]"
+#define DESCRIPTION  "No description yet"
+
+/* Public variable */
+pksh_cmd_t cmd_dev = { NAME, BRIEF, SYNOPSIS, DESCRIPTION, pksh_pkdev };
+
+
+/* GNU short options */
+enum
 {
+  /* Startup */
+  OPT_HELP  = 'h',
+  OPT_QUIET = 'q'
+};
+
+
+/* GNU long options */
+static struct option lopts [] =
+{
+  /* Startup */
+  { "help",  no_argument, NULL, OPT_HELP  },
+  { "quiet", no_argument, NULL, OPT_QUIET },
+
+  { NULL,    0,           NULL, 0         }
+};
+
+
+/* Display the syntax */
+static void usage (char * progname, struct option * options)
+{
+  /* longest option name */
+  unsigned n = optmax (options);
+
+  printf ("%s, %s\n", progname, NAME);
+  printf ("Usage: %s [options]\n", progname);
+  printf ("\n");
+
+  printf ("Startup:\n");
+  usage_item (options, n, OPT_HELP,  "show this help message and exit");
+  usage_item (options, n, OPT_QUIET, "run quietly");
+
+#if defined(ROCCO)
   printf ("`%s' displays the list of network interface(s) that can be used to look at packets on the network\n", command);
 
   printf ("\n");
@@ -50,23 +81,18 @@ static void usage (char * command)
   printf ("\n");
   printf ("Main options are:\n");
   printf ("   -h, --help                   only show this help message\n");
+#endif /* ROCCO */
 }
 
 
-/*
- * Show the list of available network interfaces attached to the system.
- * To be included in the list the interface must be configured up
- * and it should be accessible via the pcap library
- */
+/* The [pkdev] command */
 int pksh_pkdev (int argc, char * argv [])
 {
-  /* GNU long options */
-  static struct option const long_options [] =
-    {
-      { "help",        no_argument,       NULL, 'h' },
+  char * progname = basename (argv [0]);
+  char * sopts    = optlegitimate (lopts);
 
-      { NULL,          0,                 NULL,  0 }
-    };
+  /* Variables that are set according to the specified options */
+  bool quiet      = false;
 
   int option;
 
@@ -78,7 +104,7 @@ int pksh_pkdev (int argc, char * argv [])
   int once = 0;
 
   /* Array of structures (memory buffer for SIOCGIFCONF) */
-  struct ifreq room [MAX_NUM_DEVICES] ;
+  struct ifreq room [MAX_NUM_DEVICES];
   struct ifconf ifc;
   struct ifreq * first;
   struct ifreq * last;
@@ -89,20 +115,26 @@ int pksh_pkdev (int argc, char * argv [])
   char ebuf [PCAP_ERRBUF_SIZE] = {0};
   pcap_t * pcap;
 
-  memset (& room, 0, sizeof (room));
+  /* Lookup for the command in the static table of registered extensions */
+  if (! cmd_by_name (progname))
+    {
+      printf ("%s: Command [%s] not found.\n", progname, progname);
+      return -1;
+    }
 
   /* Parse command line options */
-#define OPTSTRING "h"
-
   optind = 0;
   optarg = NULL;
-  while ((option = getopt_long (argc, argv, OPTSTRING, long_options, NULL)) != -1)
+  argv [0] = progname;
+  while ((option = getopt_long (argc, argv, sopts, lopts, NULL)) != -1)
     {
       switch (option)
 	{
-	default:  usage (argv [0]); return -1;
+	default: if (! quiet) printf ("Try '%s --help' for more information.\n", progname); return 1;
 
-	case 'h': usage (argv [0]); return 0;
+	  /* Startup */
+	case OPT_HELP:  usage (progname, lopts); return 0;
+	case OPT_QUIET: quiet = true;            break;
 	}
     }
 
@@ -112,7 +144,7 @@ int pksh_pkdev (int argc, char * argv [])
       while (optind < argc)
 	printf ("%s ", argv [optind ++]);
       printf ("\"\n");
-      usage (argv [0]);
+      usage (argv [0], lopts);
       printf ("\n");
       return -1;
     }
@@ -124,6 +156,8 @@ int pksh_pkdev (int argc, char * argv [])
       printf ("%s: cannot open socket: errno = %d\n", argv [0], errno);
       return -1;
     }
+
+  memset (& room, 0, sizeof (room));
 
   /* Set output memory variables */
   ifc . ifc_len = sizeof (room);
@@ -194,5 +228,6 @@ int pksh_pkdev (int argc, char * argv [])
       return -1;
     }
 
+  /* Bye bye! */
   return 0;
 }

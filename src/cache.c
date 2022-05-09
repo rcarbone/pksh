@@ -1,38 +1,25 @@
 /*
- * cache.c - Routines to handle the internal hosts cache
+ * pksh - The Packet Shell
  *
- *            Heavily based on:
- *             "Simple hash table implementation"
- *             "Simple doubly-linked list implementation"
- *             by Michael W. Shaffer <mwshaffer@yahoo.com>
+ * R. Carbone (rocco@tecsiel.it)
+ * 2003, 2008-2009, 2022
  *
- *            with few enhanchements by me, Rocco
+ * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *                    _        _
- *              _ __ | | _____| |__
- *             | '_ \| |/ / __| '_ \
- *             | |_) |   <\__ \ | | |
- *             | .__/|_|\_\___/_| |_|
- *             |_|
+ * Routines to handle the internal hosts cache
+ *   Heavily based on:
+ *     "Simple hash table implementation"
+ *     "Simple doubly-linked list implementation"
+ *   by Michael W. Shaffer <mwshaffer@yahoo.com>
  *
- *            'pksh', the Packet Shell
- *
- *            (C) Copyright 2003-2009
- *   Rocco Carbone <rocco /at/ ntop /dot/ org>
- *
- * Released under the terms of GNU General Public License
- * at version 3;  see included COPYING file for details
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *
+ *   with few enhanchements by me, Rocco
  */
 
 
-/* Operating System header file(s) */
+/* System headers */
 #include <stdlib.h>
 
-/* Private header file(s) */
+/* Project header */
 #include "pksh.h"
 
 
@@ -104,8 +91,8 @@ char ** hostskeys (interface_t * intf)
   char ** b;
   char ** keys = argscat (argscat (htkeys (& intf -> hwnames), a = htkeys (& intf -> ipnames)), b = htkeys (& intf -> hostnames));
 
-  argsfree (a);
-  argsfree (b);
+  argsclear (a);
+  argsclear (b);
 
   return keys;
 }

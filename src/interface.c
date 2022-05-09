@@ -1,39 +1,25 @@
 /*
- * interface.c - How to handle the table of network interface(s)
+ * pksh - The Packet Shell
  *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *                    _        _
- *              _ __ | | _____| |__
- *             | '_ \| |/ / __| '_ \
- *             | |_) |   <\__ \ | | |
- *             | .__/|_|\_\___/_| |_|
- *             |_|
+ * R. Carbone (rocco@tecsiel.it)
+ * 2003, 2008-2009, 2022
  *
- *            'pksh', the Packet Shell
+ * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- *            (C) Copyright 2003-2009
- *   Rocco Carbone <rocco /at/ ntop /dot/ org>
- *
- * Released under the terms of GNU General Public License
- * at version 3;  see included COPYING file for details
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+ * How to handle the table of network interface(s)
  */
 
 
-/* Operating System header file(s) */
+/* System headers */
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
-#if defined(sun)
-# include <sys/sockio.h>
-#endif
 #include <net/if.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 
-/* Private header file(s) */
+/* Project header */
 #include "pksh.h"
 
 

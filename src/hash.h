@@ -55,5 +55,9 @@ int htno (struct hash_table * t);
 char ** htkeys (struct hash_table * t);
 void ** htvalues (struct hash_table * t);
 
-#endif /* __HASH_H__ */
+/* Rocco Carbone 2Q 2022 */
+char ** argsmore (char * argv [], char * s);
+void ** vamore (void * argv [], void * item);
 
+
+#endif /* __HASH_H__ */

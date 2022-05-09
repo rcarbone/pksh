@@ -1,35 +1,23 @@
 /*
- * datalinks.c - Network interfaces protocol decoders for:
- *               o DLT_NULL (Loopback interface)
- *               o DLT_EN10MB (Ethernet 10Mb and up)
+ * pksh - The Packet Shell
  *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *                    _        _
- *              _ __ | | _____| |__
- *             | '_ \| |/ / __| '_ \
- *             | |_) |   <\__ \ | | |
- *             | .__/|_|\_\___/_| |_|
- *             |_|
+ * R. Carbone (rocco@tecsiel.it)
+ * 2003, 2008-2009, 2022
  *
- *            'pksh', the Packet Shell
+ * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- *            (C) Copyright 2003-2009
- *   Rocco Carbone <rocco /at/ ntop /dot/ org>
- *
- * Released under the terms of GNU General Public License
- * at version 3;  see included COPYING file for details
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *
+ * Network interfaces protocol decoders for:
+ *   * DLT_NULL (Loopback interface)
+ *   * DLT_EN10MB (Ethernet 10Mb and up)
  */
 
 
-/* Operating System header file(s) */
+/* System headers */
 #if defined(linux)
 # include <net/ethernet.h>
 #endif
 
-/* Private header file(s) */
+/* Project header */
 #include "pksh.h"
 
 
@@ -52,7 +40,10 @@
  */
 #define ETH_BROADCAST     "ff:ff:ff:ff:ff:ff"
 
-#define MULTICAST_PREFIX  "33:33"
+#define MULTICAST_PREFIX  "33:33:"
+#define MULTICAST_LEN     6
+#define IGMP_PREFIX       "01:00:5e:"
+#define IGMP_LEN          9
 
 
 /* Some well known Multicast Ethernet addresses */
@@ -91,12 +82,12 @@ static protocol_t * l2_protocol (int id)
 
 
 /* Check if an Ethernet address is a multicast address */
-static int multicast (char * addr)
+int multicast (char * addr)
 {
   char ** a;
 
   for (a = eth_multicast; a && * a; a ++)
-    if (! strncmp (addr, MULTICAST_PREFIX, sizeof (MULTICAST_PREFIX)) || ! strcmp (* a, addr))
+    if (! strncmp (addr, MULTICAST_PREFIX, MULTICAST_LEN) || ! strncmp (addr, IGMP_PREFIX, IGMP_LEN) || ! strcmp (* a, addr))
       return 1;
   return 0;
 }
@@ -124,7 +115,7 @@ char * mactoa (u_char * e)
 /* Protocol decoder/counter for Ethernet interfaces
  *  Ethernet sizes
  *
- * The header is 14 bytes long (sizeof (struct ether_header))
+ * The header is 14 bytes long - eg. sizeof (struct ether_header)
  */
 void ethernet (interface_t * intf, struct pcap_pkthdr * h, const u_char * p)
 {
@@ -162,18 +153,22 @@ void ethernet (interface_t * intf, struct pcap_pkthdr * h, const u_char * p)
 
   /* Get destination Ethernet address and lookup for Broadcast Ethernet address to avoid its inclusion to the space of known HW names */
   if (! strcmp (addr = mactoa ((u_char *) & eth -> ether_dhost), ETH_BROADCAST))
-    intf -> bytes_broadcast += h -> len,
-      intf -> pkts_broadcast ++,
-      tx -> bytes_broadcast += h -> len,
+    {
+      intf -> bytes_broadcast += h -> len;
+      intf -> pkts_broadcast ++;
+      tx -> bytes_broadcast += h -> len;
       tx -> pkts_broadcast ++;
+    }
   else
     {
       /* Lookup for Multicast destination Ethernet address to avoid inclusion into hosts cache */
       if (multicast (addr))
-	intf -> bytes_multicast += h -> len,
-	  intf -> pkts_multicast ++,
-	  tx -> bytes_multicast += h -> len,
+	{
+	  intf -> bytes_multicast += h -> len;
+	  intf -> pkts_multicast ++;
+	  tx -> bytes_multicast += h -> len;
 	  tx -> pkts_multicast ++;
+	}
       else
 	{
 	  /* Add destination Ethernet address to the space of known HW names (if not already in) */

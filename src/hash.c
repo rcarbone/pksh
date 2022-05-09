@@ -26,7 +26,6 @@
 #include "hash.h"
 
 /* PRIMES: Simple prime number functions */
-inline
 unsigned int find_prime (unsigned long max)
 {
   unsigned int i = 0;
@@ -299,7 +298,7 @@ char ** htkeys (struct hash_table * t)
 
   for (i = 0; i < t -> size; i ++)
     for (item = t -> tbl [i] . head; item; item = item -> next)
-      keys = argsadd (keys, ((struct datum *) item -> data) -> key);
+      keys = argsmore (keys, ((struct datum *) item -> data) -> key);
 
   return keys;
 }
@@ -314,7 +313,7 @@ void ** htvalues (struct hash_table * t)
 
   for (i = 0; i < t -> size; i ++)
     for (item = t -> tbl [i] . head; item; item = item -> next)
-      values = vargsadd (values, ((struct datum *) item -> data) -> val);
+      values = vamore (values, ((struct datum *) item -> data) -> val);
 
   return values;
 }

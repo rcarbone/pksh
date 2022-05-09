@@ -1,41 +1,30 @@
 /*
- * ettercap.c - load and access the 'ettercap' passive OS fingerprint database
- *              into memory to resolve OS fingerprints names at run-time
+ * pksh - The Packet Shell
  *
- *            Heavily based on:
- *             "Simple hash table implementation"
- *             "Simple doubly-linked list implementation"
- *             by Michael W. Shaffer <mwshaffer@yahoo.com>
+ * R. Carbone (rocco@tecsiel.it)
+ * 2003, 2008-2009, 2022
  *
- *            with few enanchements by me, Rocco
+ * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *                    _        _
- *              _ __ | | _____| |__
- *             | '_ \| |/ / __| '_ \
- *             | |_) |   <\__ \ | | |
- *             | .__/|_|\_\___/_| |_|
- *             |_|
+ * Load and access the 'ettercap' passive OS fingerprint database
+ * into memory to resolve OS fingerprints names at run-time
  *
- *            'pksh', the Packet Shell
+ * Heavily based on:
+ *   "Simple hash table implementation"
+ *   "Simple doubly-linked list implementation"
+ * by Michael W. Shaffer <mwshaffer@yahoo.com>
  *
- *            (C) Copyright 2003-2009
- *   Rocco Carbone <rocco /at/ ntop /dot/ org>
- *
- * Released under the terms of GNU General Public License
- * at version 3;  see included COPYING file for details
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *
+ * with few enanchements by me, Rocco
  */
 
 
-/* Operating System header file(s) */
+/* System headers */
 #include <stdio.h>
 
-/* Private header file(s) */
+/* Project header */
 #include "hash.h"
 #include "ettercap.h"
+
 
 #define DEFAULT_FINGER_SIZE 256         /* initial hash table size for passive OS fingerprints names */
 

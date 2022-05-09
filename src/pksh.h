@@ -1,53 +1,48 @@
 /*
- * pksh.h - Definitions for 'pksh', the Packet Shell, that is a hack of
- *          the 'tcsh' for packets, bytes, hosts and protocols counts
+ * pksh - The Packet Shell
  *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *                    _        _
- *              _ __ | | _____| |__
- *             | '_ \| |/ / __| '_ \
- *             | |_) |   <\__ \ | | |
- *             | .__/|_|\_\___/_| |_|
- *             |_|
+ * R. Carbone (rocco@tecsiel.it)
+ * 2003, 2008-2009, 2022
  *
- *            'pksh', the Packet Shell
- *
- *            (C) Copyright 2003-2009
- *   Rocco Carbone <rocco /at/ ntop /dot/ org>
- *
- * Released under the terms of GNU General Public License
- * at version 3;  see included COPYING file for details
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *
+ * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  */
 
 
-/* Operating System header file(s) */
+#pragma once
+
+
+/* System headers */
 #include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
+#include <time.h>
+#include <sys/time.h>
 #include <pthread.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <libgen.h>
 #include <getopt.h>
 
-/* Private header file(s) */
+/* pcap header */
 #include <pcap.h>
 
+/* Project headers */
+#include "rlibc.h"
 #include "hash.h"
 
-#if !defined(FIXME)
-#include <stdarg.h>
-void xprintf (const char *, ...);
-int pksh_pkopen (int argc, char * argv []);
-#endif /* FIXME */
 
+/* Constants */
 
 /* The name of the game */
-#define PKSH_VERSION   "0.2.2"
-#define PKSH_RELEASED  "Sun, Jun 14 2009"
-#define PKSH_AUTHOR    "Rocco Carbone"
-#define PKSH_COPYRIGHT "(C) Copyright 2003-2009"
+#define PKSH_PACKAGE      "pksh"
+#define PKSH_VERSION      "0.3.0"
+#define PKSH_AUTHOR       "R. Carbone (rocco@tecsiel.it)"
+#define PKSH_RELEASED     __DATE__
+#define PKSH_LICENSE_ID   "BSD-2-Clause-FreeBSD"
+#define PKSH_LICENSE      "BSD 2-Clause FreeBSD License"
+#define PKSH_LICENSE_URL  "http://www.freebsd.org/copyright/freebsd-license.html"
 
 
 /* Macros for min/max */
@@ -86,11 +81,26 @@ int pksh_pkopen (int argc, char * argv []);
 #define COL_END          '|'
 
 
+/* Typedefs */
+
+
 /* Define a counter */
 typedef unsigned long counter_t;
 
 /* Define a sorting function */
 typedef int sf (const void * _a, const void * _b);
+
+
+/* The structure contains information on the commands the application can understand */
+typedef struct
+{
+  char * name;                                 /* builtin name      */
+  char * brief;                                /* brief description */
+  char * synopsis;                             /* usage synopsis    */
+  char * description;                          /* long description  */
+  int (* func) (int argc, char * argv []);
+
+} pksh_cmd_t;
 
 
 /* All that is needed to handle a pcap-aware interface */
@@ -378,18 +388,66 @@ typedef struct
 } protocol_t;
 
 
+/*
+ * The structure to keep run-time parameters all in one,
+ * defined in order to have a static, local and unique
+ * container that collects all the global variables
+ */
+typedef struct
+{
+  char * progname;           /* the name of the game          */
+  struct timeval boottime;   /* the time program started      */
+  char * prompt;             /* user prompt                   */
+  char * pcolor;             /* default ansi-color for prompt */
+  bool   bell;               /* ring the bell after execution */
 
+  bool   initialized;        /* has ocilib been initialized?  */
+
+} pksh_run_t;
+
+
+/* === Variables === */
+
+/* A global variable defined and initialized in file init.c */
+extern pksh_run_t pksh_run;
 
 /* Public variables in file interface.c */
 extern interface_t ** interfaces;
-extern struct timeval boottime;
 
 
-/* Public functions in file init.c */
-void pkshinit (char * progname);
+/* === Helpers === */
+extern pksh_cmd_t cmd_help;
+extern pksh_cmd_t cmd_about;
+extern pksh_cmd_t cmd_version;
+extern pksh_cmd_t cmd_license;
+#if defined(ROCCO)
+extern pksh_cmd_t cmd_when;
+#endif /* ROCCO */
 
-/* Public functions in file wrapper.c */
-void tcsh_builtins (int argc, char * argv []);
+/* === Network Interfaces === */
+extern pksh_cmd_t cmd_dev;
+extern pksh_cmd_t cmd_open;
+extern pksh_cmd_t cmd_close;
+extern pksh_cmd_t cmd_enable;
+extern pksh_cmd_t cmd_status;
+extern pksh_cmd_t cmd_uptime;
+extern pksh_cmd_t cmd_filter;
+extern pksh_cmd_t cmd_swap;
+
+/* === Viewers === */
+extern pksh_cmd_t cmd_packets;
+extern pksh_cmd_t cmd_bytes;
+extern pksh_cmd_t cmd_hosts;
+extern pksh_cmd_t cmd_arp;
+extern pksh_cmd_t cmd_finger;
+extern pksh_cmd_t cmd_last;
+extern pksh_cmd_t cmd_who;
+extern pksh_cmd_t cmd_protocols;
+extern pksh_cmd_t cmd_services;
+extern pksh_cmd_t cmd_throughput;
+
+
+/* === Functions === */
 
 /* Public functions in file cache.c */
 int hargslen (host_t * argv []);
@@ -404,27 +462,17 @@ host_t * addtoipnames (interface_t * intf, char * key);
 host_t * bindtoipnames (interface_t * intf, char * ipaddr, host_t * h);
 host_t * bindtohostnames (interface_t * intf, char * hostname, host_t * h);
 
-/* Public functions in file args.c */
-int vargslen (void * argv []);
-void ** vargsadd (void * argv [], void * p);
-void * safefree (void * a);
-void * safedup (void * a, void * b);
-int argslen (char * argv []);
-int member (char * argv [], char * item);
-char ** argsadd (char * argv [], char * s);
-char ** argsrm (char * argv [], char * item);
-void argsreplace (char * argv [], char * s, char * d);
-void argsfree (char * argv []);
-char ** argsdup (char * argv []);
-char ** argscat (char * a [], char * b []);
-void argsline (char * argv [], char c);
-void argsrows (char * argv []);
-int argsmemberof (char * name, char * list);
-char ** pieces (char * list, char * separator);
-char ** blanks (char * list);
-int argslongest (char * argv []);
-char ** argssort (char * argv []);
-char * argsjoin (char * argv []);
+/* === Containers === */
+
+/* Public functions in file commands.c */
+unsigned cmd_size (void);
+char ** cmd_names (void);
+pksh_cmd_t * cmd_by_name (char * name);
+pksh_cmd_t * cmd_lookup (unsigned i);
+char * cmd_by_index (unsigned i);
+unsigned maxname (void);
+
+
 
 /* Public functions in file interface.c */
 interface_t * activeintf (void);
@@ -440,14 +488,12 @@ interface_t * intfbyname (interface_t * argv [], char * name);
 counter_t intfbytes (interface_t * argv []);
 counter_t intfpkts (interface_t * argv []);
 
-/* Public functions in file prompt.c */
-void pkshprompt (char * interface);
-
+#if !defined(ROCCO)
 /* Public functions in file interval.c */
 int _days_ (time_t t1, time_t t2);
 int _hours_ (time_t t1, time_t t2);
 int _mins_ (time_t t1, time_t t2);
-time_t samet (struct timeval * t2, struct timeval * t1);
+/* time_t samet (struct timeval * t2, struct timeval * t1); */
 int days (struct timeval * t2, struct timeval * t1);
 int hours (struct timeval * t2, struct timeval * t1);
 int mins (struct timeval * t2, struct timeval * t1);
@@ -456,6 +502,7 @@ time_t msecs (struct timeval * t2, struct timeval * t1);
 time_t usecs (struct timeval * t2, struct timeval * t1);
 struct timeval * tvnow (void);
 char * elapsedtime (struct timeval * start, struct timeval * stop);
+#endif /* ROCCO */
 
 /* Public functions in file render.c */
 char * percentage (counter_t partial, counter_t total);
@@ -476,13 +523,11 @@ void tcp_protocols_distribution (host_t * h);
 int hostlongest (host_t * argv [], int numeric);
 void hostprintf (host_t * h, int argc, char * argv [], char fsep);
 
-/* Public functions in file fmemdmp.c */
-void fmemdmp (FILE * fd, char * ptr, int size, char * label);
-
 /* Public functions in file glob.c */
 char ** globargs (int argc, char * argv [], const char * pattern);
 
 /* Public functions in file datalink.c */
+int multicast (char * addr);
 char * mactoa (u_char * e);
 void ethernet (interface_t * intf, struct pcap_pkthdr * h, const u_char * p);
 void loopback (interface_t * intf, struct pcap_pkthdr * h, const u_char * p);
@@ -587,4 +632,111 @@ char * vendor (char * mac);
 void osfingerprintfill (void);
 char * osfingerprintmatch (char * fp);
 
-/* Commands */
+
+/* Public functions in file tcsh-wrap.c */
+unsigned tcsh_screen_rows (void);
+unsigned tcsh_screen_cols (void);
+void tcsh_set_variable (char * name, char * value);
+void tcsh_unset_variable (char * var);
+void tcsh_builtins (int argc, char * argv []);
+
+/* Public functions in file init.c */
+void pksh_init (char * progname, int quiet);
+
+/* Public functions in file prompt.c */
+void pksh_prompt (char * interface);
+
+
+/* === Helpers === */
+
+#if !defined(ROCCO)
+/* Public functions in file pkhelp.c */
+int pksh_pkhelp (int argc, char * argv []);
+#endif /* ROCCO */
+
+/* Public functions in file help.c */
+int pksh_exit (int argc, char * argv []);
+int pksh_quit (int argc, char * argv []);
+int pksh_help (int argc, char * argv []);
+
+/* Public functions in file about.c */
+int pksh_about (int argc, char * argv []);
+
+/* Public functions in file version.c */
+int pksh_version (int argc, char * argv []);
+
+/* Public functions in file license.c */
+int pksh_license (int argc, char * argv []);
+
+/* Public functions in file when.c */
+int pksh_when (int argc, char * argv []);
+
+
+/* === Network Interfaces === */
+
+/* Public functions in file pkdev.c */
+int pksh_pkdev (int argc, char * argv []);
+
+/* Public functions in file open.c */
+int pksh_pkopen (int argc, char * argv []);
+
+/* Public functions in file close.c */
+int pksh_pkclose (int argc, char * argv []);
+
+/* Public functions in file enable.c */
+int pksh_pkenable (int argc, char * argv []);
+
+/* Public functions in file status.c */
+int pksh_pkstatus (int argc, char * argv []);
+
+/* Public functions in file uptime.c */
+int pksh_pkuptime (int argc, char * argv []);
+
+/* Public functions in file filter.c */
+int pksh_pkfilter (int argc, char * argv []);
+
+/* Public functions in file swap.c */
+int pksh_pkswap (int argc, char * argv []);
+
+
+/* === Viewers === */
+
+/* Public functions in file packets.c */
+int pksh_packets (int argc, char * argv []);
+
+/* Public functions in file bytes.c */
+int pksh_bytes (int argc, char * argv []);
+
+/* Public functions in file hosts.c */
+int pksh_pkhosts (int argc, char * argv []);
+
+/* Public functions in file arp.c */
+int pksh_pkarp (int argc, char * argv []);
+
+/* Public functions in file finger.c */
+int pksh_pkfinger (int argc, char * argv []);
+
+/* Public functions in file last.c */
+int pksh_pklast (int argc, char * argv []);
+
+/* Public functions in file who.c */
+int pksh_pkwho (int argc, char * argv []);
+
+/* Public functions in file protocols.c */
+int pksh_protocols (int argc, char * argv []);
+
+/* Public functions in file services.c */
+int pksh_services (int argc, char * argv []);
+
+/* Public functions in file throughput.c */
+int pksh_throughput (int argc, char * argv []);
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+ * Do not edit anything below, configure creates it.
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+ */
+
+/* Definitions for builtin extensions to the shell will be automatically inserted here by the configure script */
+

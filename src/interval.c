@@ -1,28 +1,16 @@
 /*
- * interval.c - How to handle time and time intervals
+ * pksh - The Packet Shell
  *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *                    _        _
- *              _ __ | | _____| |__
- *             | '_ \| |/ / __| '_ \
- *             | |_) |   <\__ \ | | |
- *             | .__/|_|\_\___/_| |_|
- *             |_|
+ * R. Carbone (rocco@tecsiel.it)
+ * 2003, 2008-2009, 2022
  *
- *            'pksh', the Packet Shell
+ * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- *            (C) Copyright 2003-2009
- *   Rocco Carbone <rocco /at/ ntop /dot/ org>
- *
- * Released under the terms of GNU General Public License
- * at version 3;  see included COPYING file for details
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *
+ * How to handle time and time intervals
  */
 
 
-/* Operating System header file(s) */
+/* System headers */
 #include <stdio.h>
 #include <time.h>
 #include <sys/time.h>
@@ -62,7 +50,7 @@ int _mins_ (time_t t2, time_t t1)
 /* Return 1 is t1 == t2 at the second resolution */
 time_t samet (struct timeval * t2, struct timeval * t1)
 {
-  return t2 -> tv_sec == t2 -> tv_sec;
+  return t2 -> tv_sec == t1 -> tv_sec;
 }
 
 

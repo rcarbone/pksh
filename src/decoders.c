@@ -1,27 +1,16 @@
 /*
- * decoders.c - Decoders/counters for the most common protocols
+ * pksh - The Packet Shell
  *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *                    _        _
- *              _ __ | | _____| |__
- *             | '_ \| |/ / __| '_ \
- *             | |_) |   <\__ \ | | |
- *             | .__/|_|\_\___/_| |_|
- *             |_|
+ * R. Carbone (rocco@tecsiel.it)
+ * 2003, 2008-2009, 2022
  *
- *            'pksh', the Packet Shell
+ * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- *            (C) Copyright 2003-2009
- *   Rocco Carbone <rocco /at/ ntop /dot/ org>
- *
- * Released under the terms of GNU General Public License
- * at version 3;  see included COPYING file for details
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+ * Decoders/counters for the most common protocols
  */
 
 
-/* Operating System header file(s) */
+/* System headers */
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -32,7 +21,7 @@
 #endif
 #include <netinet/tcp.h>
 
-/* Private header file(s) */
+/* Project header */
 #include "pksh.h"
 
 

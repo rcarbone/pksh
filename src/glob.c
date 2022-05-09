@@ -1,34 +1,22 @@
 /*
- * glob.c - Based on glob.c and glob.h from glibc-2.3.1
- *          with small modification to be compiled and
- *          included as a standalone module object.
+ * pksh - The Packet Shell
  *
- *          All the lines modified have been signed with
- *          the marker <Rocco Was Here>
+ * R. Carbone (rocco@tecsiel.it)
+ * 2003, 2008-2009, 2022
  *
- *          I had to prefix all the public function
- *          with 'my' due to the presence of similar
- *          routines in the original tcsh distribution
- *          (in file glob.c)
+ * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *                    _        _
- *              _ __ | | _____| |__
- *             | '_ \| |/ / __| '_ \
- *             | |_) |   <\__ \ | | |
- *             | .__/|_|\_\___/_| |_|
- *             |_|
+ * Based on glob.c and glob.h from glibc-2.3.1
+ * with small modification to be compiled and
+ * included as a standalone module object.
  *
- *            'pksh', the Packet Shell
+ * All the lines modified have been signed with
+ * the marker <Rocco Was Here>
  *
- *            (C) Copyright 2003-2009
- *   Rocco Carbone <rocco /at/ ntop /dot/ org>
- *
- * Released under the terms of GNU General Public License
- * at version 3;  see included COPYING file for details
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- *
+ * I had to prefix all the public function
+ * with 'my' due to the presence of similar
+ * routines in the original tcsh distribution
+ * (in file glob.c)
  */
 
 
@@ -390,6 +378,9 @@ extern char *alloca ();
 # undef	GLOB_NOESCAPE
 # undef	GLOB_PERIOD
 #endif
+
+/* Project header */
+#include "pksh.h"
 
 /* <Rocco Was Here> */
 
@@ -1864,7 +1855,7 @@ char ** globargs (int argc, char * argv [], const char * pattern)
 
   for (i = 0; i < globv . gl_pathc; i ++)
     if (globv . gl_pathv)
-      globargv = argsadd (globargv, globv . gl_pathv [i]);
+      globargv = argsmore (globargv, globv . gl_pathv [i]);
 
   myglobfree (& globv);
 
