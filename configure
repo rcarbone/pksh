@@ -281,7 +281,6 @@ for cmd in `echo $EXTRACMDS`; do
   echo "void tcsh_$cmd (Char ** v, struct command * c) { USE(c); tcsh_xxx (v, pksh_$cmd); }" >> $SHDIR/$PACKAGE-tcsh-wrap.c
 done
 
-echo >> $SHDIR/$PACKAGE-tcsh-wrap.c
 echo "done!"
 
 # Move to the build directory

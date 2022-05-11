@@ -21,7 +21,6 @@ MAINSRCS += try-link.c
 
 # rlibc
 LIBSRCS  += glob.c
-LIBSRCS  += interval.c
 LIBSRCS  += list.c
 LIBSRCS  += hash.c
 
@@ -61,9 +60,9 @@ LIBSRCS  += swap.c
 # Viewers
 LIBSRCS  += packets.c
 LIBSRCS  += bytes.c
-# LIBSRCS  += services.c
-LIBSRCS  += throughput.c
 LIBSRCS  += protocols.c
+LIBSRCS  += throughput.c
+# LIBSRCS  += services.c
 LIBSRCS  += hosts.c
 LIBSRCS  += arp.c
 LIBSRCS  += last.c

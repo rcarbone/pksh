@@ -32,53 +32,48 @@
 static char __version__ []  = PKSH_VERSION;
 static char __authors__ []  = PKSH_AUTHOR;
 static char __released__ [] = PKSH_RELEASED;
-static char __id__ []       = "A hack of the popular 'tcsh' with builtin extensions for network monitoring.\n";
+static char __id__ []       = "A hack of the popular 'tcsh' with builtin extensions for network monitoring.";
 
 
 /* Global variable here */
 pksh_run_t pksh_run;
 
 
-/* Set extensions completions */
-static void set_completions (void)
+/* Initialize the runtime variable */
+static void init_runtime (char * progname)
+{
+  pksh_run . progname  = progname;
+  gettimeofday (& pksh_run . boottime, NULL);   /* Set time the shell boots */
+  pksh_run . prompt      = NULL;                /* user prompt               */
+  pksh_run . pcolor      = NULL;                /* default prompt ansi-color */
+  pksh_run . bell        = false;
+  pksh_run . initialized = false;
+}
+
+
+/* Set the complete list of completions */
+static void set_completions (int cargc, char * cargv [])
 {
   int i;
 
-  int cargc = 0;
-  char ** cargv = NULL;
-
-  int hargc = 0;
   char ** hargv = NULL;
-
-  cargv = argsmore (cargv, "bytes");
-  cargv = argsmore (cargv, "packets");
-  cargv = argsmore (cargv, "pkarp");
-  cargv = argsmore (cargv, "pkcal");
-  cargv = argsmore (cargv, "pkfinger");
-  cargv = argsmore (cargv, "pkhosts");
-  cargv = argsmore (cargv, "pklast");
-  cargv = argsmore (cargv, "pkwho");
-  cargv = argsmore (cargv, "protocols");
-  cargv = argsmore (cargv, "services");
-  cargv = argsmore (cargv, "throughput");
-
-  cargc = argslen (cargv);
 
   for (i = 0; i < cargc; i ++)
     {
+      int hargc;
+
+      /* complete pkhosts 'p/\*\/$hosts' */
       hargv = argsmore (NULL, "complete");
       hargv = argsmore (hargv, cargv [i]);
       hargv = argsmore (hargv, "p/\\*/$hosts/");
 
       hargc = argslen (hargv);
 
-      /* add the completion directive to the list of completions */
+      /* Add the completion directive to the list of completions */
       tcsh_builtins (hargc, hargv);
 
       argsclear (hargv);
     }
-
-  argsclear (cargv);
 }
 
 
@@ -98,15 +93,15 @@ static void helloworld (char * progname)
 }
 
 
-/* Just few initialization steps */
+/* Called once when the shell boots just to perform few initialization steps */
 void pksh_init (char * progname, int quiet)
 {
-  pksh_run . progname  = progname;
-  gettimeofday (& pksh_run . boottime, NULL);   /* Set time the shell boots */
-  pksh_run . prompt      = NULL;                /* user prompt               */
-  pksh_run . pcolor      = NULL;                /* default prompt ansi-color */
-  pksh_run . bell        = false;
-  pksh_run . initialized = false;
+  /* This is the list of commands where completion on variable [$hosts] would take effect */
+  static char * completions [] =
+    { "packets", "bytes", "protocols", "throughput", "services", "pkhosts", "pkarp", "pklast", "pkwho", "pkfinger", NULL };
+
+  /* Initialize runtime variable to default values */
+  init_runtime (progname);
 
   if (! quiet)
     {
@@ -115,23 +110,23 @@ void pksh_init (char * progname, int quiet)
 
       if (! (getuid () && geteuid ()))
 	xprintf ("WARNING: YOU ARE SUPERUSER !!!\n");
-      xprintf ("\nType 'pkhelp' for the list of builtin extensions implemented by this shell\n\n");
+      xprintf ("Type 'help' for the list of builtin extensions implemented by this shell.\n\n");
     }
 
   /* Set unbuffered stdout */
   setvbuf (stdout, NULL, _IONBF, 0);
-
-  /* Set the $pksh variable */
-  tcsh_set_variable (PKSH_PACKAGE, PKSH_VERSION);
-
-  /* Set the complete commands */
-  set_completions ();
 
   /* Initialize the vendor hash table */
   vtfill ();
 
   /* Initialize the OS fingerprint hash table */
   osfingerprintfill ();
+
+  /* Define the set of [pksh] commands where the completion would take effect on the [$hosts] variable */
+  set_completions (argslen (completions), completions);
+
+  /* Set the $pksh variable */
+  tcsh_set_variable (PKSH_PACKAGE, PKSH_VERSION);
 
   /* Set the $prompt variable */
   pksh_prompt (NULL);

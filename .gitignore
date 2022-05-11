@@ -1,0 +1,33 @@
+# Ignore all
+# *
+
+# Unignore all with extensions
+# !*.*
+
+!*.c
+!*.h
+
+# Libraries
+*.a
+
+# Shared objects
+*.so
+
+# Object files
+*.o
+
+# Dependency files
+*.M
+
+# Valgrind exclusion
+*.X
+
+# Backup files
+*~
+
+# Ignore [local] dirs
+3rdparty
+shell
+
+# Executables
+src/try-link

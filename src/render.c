@@ -534,7 +534,7 @@ static void age_last_printf (host_t * h)
   printf ("%-*.*s - ", FIXED_LEN_SEEN, FIXED_LEN_SEEN, ctime (& h -> first . tv_sec));
   printf ("%-8.8s  ", ctime (& h -> last . tv_sec) + 11);
   printf ("(%02d:%02d:%02d)",
-	  hours (& h -> last, & h -> first), mins (& h -> last, & h -> first), secs (& h -> last, & h -> first));
+	  tvhours (& h -> last, & h -> first), tvmins (& h -> last, & h -> first), tvsecs (& h -> last, & h -> first));
 }
 
 
@@ -542,7 +542,7 @@ static void age_last_printf (host_t * h)
 void age_uptime_printf (host_t * h)
 {
   printf ("%3d day(s) %02d:%02d:%02d",
-	  days (& h -> last, & h -> first), hours (& h -> last, & h -> first), mins (& h -> last, & h -> first), secs (& h -> last, & h -> first));
+	  tvdays (& h -> last, & h -> first), tvhours (& h -> last, & h -> first), tvmins (& h -> last, & h -> first), tvsecs (& h -> last, & h -> first));
 }
 
 
@@ -553,7 +553,7 @@ void idle_uptime_printf (host_t * h)
   gettimeofday (& now, NULL);
 
   printf ("%3d day(s) %02d:%02d:%02d",
-	  days (& now, & h -> last), hours (& now, & h -> last), mins (& now, & h -> last), secs (& now, & h -> first));
+	  tvdays (& now, & h -> last), tvhours (& now, & h -> last), tvmins (& now, & h -> last), tvsecs (& now, & h -> first));
 }
 
 

@@ -155,22 +155,22 @@ int sort_by_domain (const void * _a, const void * _b)
 /* Sort by age */
 int sort_by_age (const void * _a, const void * _b)
 {
-  return usecs (& (* (host_t **) _b) -> last, & (* (host_t **) _b) -> first) -
-    usecs (& (* (host_t **) _a) -> last, & (* (host_t **) _a) -> first);
+  return tvusecs (& (* (host_t **) _b) -> last, & (* (host_t **) _b) -> first) -
+    tvusecs (& (* (host_t **) _a) -> last, & (* (host_t **) _a) -> first);
 }
 
 
 /* Sort by date the hosts were first seen */
 int sort_by_firstseen (const void * _a, const void * _b)
 {
-  return usecs (& (* (host_t **) _b) -> first, & (* (host_t **) _a) -> first);
+  return tvusecs (& (* (host_t **) _b) -> first, & (* (host_t **) _a) -> first);
 }
 
 
 /* Sort by date the hosts were last seen */
 int sort_by_lastseen (const void * _a, const void * _b)
 {
-  return usecs (& (* (host_t **) _b) -> last, & (* (host_t **) _a) -> last);
+  return tvusecs (& (* (host_t **) _b) -> last, & (* (host_t **) _a) -> last);
 }
 
 

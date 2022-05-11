@@ -420,9 +420,7 @@ extern pksh_cmd_t cmd_help;
 extern pksh_cmd_t cmd_about;
 extern pksh_cmd_t cmd_version;
 extern pksh_cmd_t cmd_license;
-#if defined(ROCCO)
-extern pksh_cmd_t cmd_when;
-#endif /* ROCCO */
+
 
 /* === Network Interfaces === */
 extern pksh_cmd_t cmd_dev;
@@ -472,8 +470,6 @@ pksh_cmd_t * cmd_lookup (unsigned i);
 char * cmd_by_index (unsigned i);
 unsigned maxname (void);
 
-
-
 /* Public functions in file interface.c */
 interface_t * activeintf (void);
 interface_t * lastestintf (void);
@@ -487,22 +483,6 @@ void intfclean (interface_t * argv []);
 interface_t * intfbyname (interface_t * argv [], char * name);
 counter_t intfbytes (interface_t * argv []);
 counter_t intfpkts (interface_t * argv []);
-
-#if !defined(ROCCO)
-/* Public functions in file interval.c */
-int _days_ (time_t t1, time_t t2);
-int _hours_ (time_t t1, time_t t2);
-int _mins_ (time_t t1, time_t t2);
-/* time_t samet (struct timeval * t2, struct timeval * t1); */
-int days (struct timeval * t2, struct timeval * t1);
-int hours (struct timeval * t2, struct timeval * t1);
-int mins (struct timeval * t2, struct timeval * t1);
-int secs (struct timeval * t2, struct timeval * t1);
-time_t msecs (struct timeval * t2, struct timeval * t1);
-time_t usecs (struct timeval * t2, struct timeval * t1);
-struct timeval * tvnow (void);
-char * elapsedtime (struct timeval * start, struct timeval * stop);
-#endif /* ROCCO */
 
 /* Public functions in file render.c */
 char * percentage (counter_t partial, counter_t total);
@@ -668,9 +648,6 @@ int pksh_version (int argc, char * argv []);
 /* Public functions in file license.c */
 int pksh_license (int argc, char * argv []);
 
-/* Public functions in file when.c */
-int pksh_when (int argc, char * argv []);
-
 
 /* === Network Interfaces === */
 
@@ -707,6 +684,15 @@ int pksh_packets (int argc, char * argv []);
 /* Public functions in file bytes.c */
 int pksh_bytes (int argc, char * argv []);
 
+/* Public functions in file protocols.c */
+int pksh_protocols (int argc, char * argv []);
+
+/* Public functions in file services.c */
+int pksh_services (int argc, char * argv []);
+
+/* Public functions in file throughput.c */
+int pksh_throughput (int argc, char * argv []);
+
 /* Public functions in file hosts.c */
 int pksh_pkhosts (int argc, char * argv []);
 
@@ -721,15 +707,6 @@ int pksh_pklast (int argc, char * argv []);
 
 /* Public functions in file who.c */
 int pksh_pkwho (int argc, char * argv []);
-
-/* Public functions in file protocols.c */
-int pksh_protocols (int argc, char * argv []);
-
-/* Public functions in file services.c */
-int pksh_services (int argc, char * argv []);
-
-/* Public functions in file throughput.c */
-int pksh_throughput (int argc, char * argv []);
 
 
 /*

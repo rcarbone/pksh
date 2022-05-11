@@ -24,9 +24,8 @@
 extern int TermH;      /* number of real screen lines */
 extern int TermV;      /* screen width                */
 
-
-extern void unset (Char **, struct command *);
-extern void docomplete (Char **, struct command *);
+/* defined in file tw.decls.h */
+void docomplete (Char **, struct command *);
 
 /* Project header */
 #include "pksh.h"
@@ -39,41 +38,23 @@ typedef int handler (int argc, char * argv []);
 
 /* My own variables as extensions to those available from tcsh */
 static Char hosts [] = {'h', 'o', 's', 't', 's', '\0'};   /* just a new variable */
-static Char * extensions [];                              /* array of new builtins */
-
-
-/* Check if the extension in 'e' should also update the $hosts variable */
-static int extension (Char ** e)
-{
-  Char ** ext = extensions;
-  while (* ext)
-    if (eq (* e, * ext ++))
-      return 1;
-  return 0;
-}
 
 
 /* Fill the $hosts variable */
 static void fillhosts (void)
 {
-  char * name;
-  interface_t * interface;
+  char * name = getintfname ();
+  interface_t * interface = name ? intfbyname (interfaces, name) : NULL;
 
   /* The unsorted array of unique hosts identifiers */
   char ** keys;
-
-  /* The sorted one */
-  char ** sorted;
   char ** s;
 
   char ** nargv;
 
   /* Lookup for the name of the active interface in the table of the enabled interfaces */
-  if ((! (interface = intfbyname (interfaces, name = getintfname ()))) || interface -> status != INTERFACE_ENABLED)
+  if (! interface || interface -> status != INTERFACE_ENABLED || ! interface -> pkts_total)
     return;
-
-  /* Get and sort all the currently known unique host identifiers */
-  sorted = argssort (keys = hostskeys (interface));
 
   /* Set the $hosts variable */
   nargv = argsmore (NULL, "set");
@@ -81,16 +62,39 @@ static void fillhosts (void)
   nargv = argsmore (nargv, "=");
   nargv = argsmore (nargv, "(");
 
-  for (s = sorted; s && * s; s ++)
-    nargv = argsmore (nargv, * s);
+  /* Get all the currently known unique MAC identifiers */
+  if (htno (& interface -> hwnames))
+    {
+      keys = htkeys (& interface -> hwnames);
+      for (s = keys; s && * s; s ++)
+	nargv = argsmore (nargv, * s);
+      argsclear (keys);
+    }
+
+  /* Get all the currently known unique IP */
+  if (htno (& interface -> ipnames))
+    {
+      keys = htkeys (& interface -> ipnames);
+      for (s = keys; s && * s; s ++)
+	nargv = argsmore (nargv, * s);
+      argsclear (keys);
+    }
+
+  /* Get all the currently known unique hostnames */
+  if (htno (& interface -> hostnames))
+    {
+      keys = htkeys (& interface -> hostnames);
+      for (s = keys; s && * s; s ++)
+	nargv = argsmore (nargv, * s);
+      argsclear (keys);
+    }
 
   nargv = argsmore (nargv, ")");
 
+  /* Update the $hosts variable */
   tcsh_builtins (argslen (nargv), nargv);
 
   argsclear (nargv);
-  argsclear (sorted);
-  argsclear (keys);
 }
 
 
@@ -113,26 +117,58 @@ static void handle_completion (char * argv [])
 }
 
 
+/* Set the [$name] array */
+static void set_array (char * name, char ** values)
+{
+  char ** argv;
+  char ** n;
+  char ** sorted;
+
+  if (! values)
+    return;
+
+  /* Sort currently known unique table names */
+  sorted = argssort (values);
+
+  /* Set the $var variable */
+  argv = argsmore (NULL, "set");
+  argv = argsmore (argv, name);
+  argv = argsmore (argv, "=");
+
+  argv = argsmore (argv, "(");
+  for (n = sorted; n && * n; n ++)
+    argv = argsmore (argv, * n);
+  argv = argsmore (argv, ")");
+
+  handle_completion (argv);
+
+  argsclear (sorted);
+  argsclear (argv);
+}
+
+
 /* How to call the [pksh] extensions from tcsh */
 static void tcsh_xxx (Char ** v, handler * func)
 {
   Char ** vv = v;                                               /* interator in the 'v' array */
-  struct varent * nn = adrof (hosts);                           /* address of the $hosts variable */
 
   /* Insert command name as argv [0] */
   char ** argv = argsmore (NULL, short2str (* vv ++));
 
   /* Check if the extension in 'v' should also update the $hosts variable */
-  if (extension (v))
+  if (! strcmp (argv [0], "pkarp") || ! strcmp (argv [0], "pkhosts") ||
+      ! strcmp (argv [0], "xxx") || ! strcmp (argv [0], "xxx") || ! strcmp (argv [0], "xxx"))
     {
-      /* Fill the $hosts variable */
+      struct varent * nn = adrof (hosts);                           /* address of the $hosts variable */
+
+      /* Update the [$hosts] variable for hosts names TAB-completion and globbing (only a subset of commands) */
       fillhosts ();
 
       /* optional parameters on the command line? */
       while (nn && * vv)
 	{
-	  char ** gargv = NULL;
 	  char * what = strdup (short2str (* vv));          /* Why do I need a local copy? */
+	  char ** gargv;
 
 	  gargv = globargs (blklen (nn -> vec), short2blk (nn -> vec), what);
 	  if (gargv)
@@ -161,7 +197,7 @@ static void tcsh_xxx (Char ** v, handler * func)
 
   /* It's time to execute the function */
   if ((* func) (argslen (argv), argv))
-    setcopy (STRstatus, Strsave (STR1), VAR_READWRITE);  /* set the $status variable */
+    setcopy (STRstatus, Strsave (STR1), VAR_READWRITE);         /* set the $status variable */
 }
 
 
@@ -212,21 +248,18 @@ void tcsh_builtins (int argc, char * argv [])
 {
   Char ** v;
 
-  v = blk2short (argv);
+  if (argc && argv)
+    {
+      v = blk2short (argv);
 
-  if (! strcmp (argv [0], "set"))
-    doset (v, NULL);
-  else if (! strcmp (argv [0], "complete"))
-    docomplete (v, NULL);
-  else if (! strcmp (argv [0], "echo"))
-    doecho (v, NULL);
+      if (! strcmp (argv [0], "set"))
+	doset (v, NULL);
+      else if (! strcmp (argv [0], "complete"))
+	docomplete (v, NULL);
+      else if (! strcmp (argv [0], "echo"))
+	doecho (v, NULL);
+    }
 }
 
-
-/*
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- * Do not edit anything below, configure creates it.
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- */
 
 /* Definitions for builtin extensions to the shell will be automatically inserted here by the configure script */
