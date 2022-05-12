@@ -1,8 +1,8 @@
-/*
+ /*
  * pksh - The Packet Shell
  *
  * R. Carbone (rocco@tecsiel.it)
- * 2003, 2008-2009, 2022
+ * 2008-2009, 2022
  *
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
@@ -35,8 +35,14 @@ static char __released__ [] = PKSH_RELEASED;
 static char __id__ []       = "A hack of the popular 'tcsh' with builtin extensions for network monitoring.";
 
 
+/* This is the list of commands where completion on variable [$hosts] would take effect */
+static char * completions [] =
+  { "packets", "bytes", "protocols", "throughput", "services", "pkhosts", "pkarp", "pklast", "pkwho", "pkfinger", NULL };
+
+
 /* Global variable here */
 pksh_run_t pksh_run;
+
 
 
 /* Initialize the runtime variable */
@@ -93,13 +99,16 @@ static void helloworld (char * progname)
 }
 
 
+/* Evaluate if 'cmd' is hosts-completion command */
+bool check_completion (char * cmd)
+{
+  return argsmember (completions, cmd) != -1 ? true : false; 
+}
+
+
 /* Called once when the shell boots just to perform few initialization steps */
 void pksh_init (char * progname, int quiet)
 {
-  /* This is the list of commands where completion on variable [$hosts] would take effect */
-  static char * completions [] =
-    { "packets", "bytes", "protocols", "throughput", "services", "pkhosts", "pkarp", "pklast", "pkwho", "pkfinger", NULL };
-
   /* Initialize runtime variable to default values */
   init_runtime (progname);
 

@@ -30,4 +30,7 @@
 shell
 
 # Executables
+src/ettercap2c
+src/oui2c
 src/try-link
+

@@ -2,7 +2,7 @@
  * pksh - The Packet Shell
  *
  * R. Carbone (rocco@tecsiel.it)
- * 2003, 2008-2009, 2022
+ * 2008-2009, 2022
  *
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
@@ -59,7 +59,7 @@ int main (int argc, char * argv [])
   printf (" *\n");
   printf (" * The official list is at https://github.com/Ettercap/ettercap/blob/master/share/etter.finger.os\n");
   printf (" *\n");
-  printf (" * (C) Copyright 2003, 2008-2009, 2022 Rocco Carbone <rocco@tecsiel.it>\n");
+  printf (" * (C) Copyright 2008-2009, 2022 Rocco Carbone <rocco@tecsiel.it>\n");
   printf (" *\n");
   printf (" * Please do not edit\n");
   printf (" */\n");

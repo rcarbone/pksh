@@ -2,11 +2,9 @@
  * pksh - The Packet Shell
  *
  * R. Carbone (rocco@tecsiel.it)
- * 2003, 2008-2009, 2022
+ * 2008-2009, 2022
  *
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
- *
- * Open network interface(s) to look at packets on the network
  */
 
 
@@ -28,7 +26,7 @@
 
 /* Identifiers */
 #define NAME         "pkopen"
-#define BRIEF        "Enable packets capture on network interface(s)"
+#define BRIEF        "Open network interface(s) to look at packets on the network"
 #define SYNOPSIS     "pkopen [options]"
 #define DESCRIPTION  "No description yet"
 

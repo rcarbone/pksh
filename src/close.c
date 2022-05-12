@@ -2,11 +2,9 @@
  * pksh - The Packet Shell
  *
  * R. Carbone (rocco@tecsiel.it)
- * 2003, 2008-2009, 2022
+ * 2008-2009, 2022
  *
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
- *
- * Close network interface(s)
  */
 
 

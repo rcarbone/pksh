@@ -2,7 +2,7 @@
  * pksh - The Packet Shell
  *
  * R. Carbone (rocco@tecsiel.it)
- * 2003, 2008-2009, 2022
+ * 2008-2009, 2022
  *
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
@@ -155,9 +155,8 @@ static void tcsh_xxx (Char ** v, handler * func)
   /* Insert command name as argv [0] */
   char ** argv = argsmore (NULL, short2str (* vv ++));
 
-  /* Check if the extension in 'v' should also update the $hosts variable */
-  if (! strcmp (argv [0], "pkarp") || ! strcmp (argv [0], "pkhosts") ||
-      ! strcmp (argv [0], "xxx") || ! strcmp (argv [0], "xxx") || ! strcmp (argv [0], "xxx"))
+  /* Check if the command in 'v' should also update the $hosts variable */
+  if (check_completion (argv [0]))
     {
       struct varent * nn = adrof (hosts);                           /* address of the $hosts variable */
 

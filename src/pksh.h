@@ -2,7 +2,7 @@
  * pksh - The Packet Shell
  *
  * R. Carbone (rocco@tecsiel.it)
- * 2003, 2008-2009, 2022
+ * 2008-2009, 2022
  *
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  */
@@ -621,6 +621,7 @@ void tcsh_unset_variable (char * var);
 void tcsh_builtins (int argc, char * argv []);
 
 /* Public functions in file init.c */
+bool check_completion (char * cmd);
 void pksh_init (char * progname, int quiet);
 
 /* Public functions in file prompt.c */
